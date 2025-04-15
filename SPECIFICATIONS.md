@@ -2,7 +2,7 @@
 
 Este documento serve de guia para os programadores envolvidos no desenvolvimento da aplicação. Descreve os tipos de ficheiros suportados, a definição dos metadados e a estrutura do manifesto (SIP) com base na norma BagIt.
 
-## 📁 Tipos de Ficheiros Suportados
+## Tipos de Ficheiros Suportados
 
 A aplicação deverá aceitar os seguintes tipos de ficheiros, divididos por categoria:
 
@@ -12,7 +12,7 @@ A aplicação deverá aceitar os seguintes tipos de ficheiros, divididos por cat
 - `.png`
 - `.gif`
 
-### Documentos e Texto
+### Documentos
 
 - `.txt`
 - `.md` (Markdown)
@@ -33,28 +33,69 @@ A aplicação deverá aceitar os seguintes tipos de ficheiros, divididos por cat
 - `.mp4`
 - `.webm`
 
-## Outros
+### Outro
 
 Qualquer outro tipo de dados desconhecido ou não suportado cai nesta categoria.
 
-## 🏷️ Metadados
+## Taxonomia
+
+Para garantir coerência na categorização dos recursos, é utilizado um vocabulário controlado (taxonomia). Esta estrutura pode ser usada para filtrar, agrupar e navegar os conteúdos da aplicação.
+
+```json
+{
+  "Pessoal": {
+    "Fotografia": [],
+    "Pensamento": [],
+    "Crónica": []
+  },
+  "Atividades": {
+    "Evento": {
+      "Jantar de Aniversário": [],
+      "Participação em Evento": []
+    },
+    "Desporto": {
+      "Passeio de Bicicleta": [],
+      "Treino de Natação": [],
+      "Corrida": [],
+      "Registo Desportivo": []
+    },
+    "Viagem": []
+  },
+  "Académico": {
+    "Resultado Académico": [],
+    "Comentário Web": []
+  }
+}
+```
+
+### Exemplo de representação num recurso:
+
+```json
+{
+  "tituloRecurso": "Foto do jantar",
+  "tags": ["Pessoal/Fotografia", "Atividades/Evento/Jantar de Aniversário"]
+}
+```
+
+> Um recurso pode conter **mais do que um classificador** dentro da hierarquia, desde que faça sentido semanticamente.
+
+## Metadados
 
 Todos os ficheiros submetidos devem ser acompanhados de metadados que descrevam o recurso. Estes metadados serão armazenados na base de dados MongoDB e utilizados para facilitar a pesquisa e categorização.
 
 ### Campos de Metadados Obrigatórios
 
-| Campo           | Descrição                                                                   |
-| --------------- | --------------------------------------------------------------------------- |
-| `dataCriacao`   | Data em que o conteúdo foi criado                                           |
-| `dataSubmissao` | Data em que o ficheiro foi submetido à aplicação                            |
-| `produtor`      | Nome ou identificação de quem criou o conteúdo                              |
-| `publicador`    | Nome ou identificação de quem submeteu o ficheiro                           |
-| `tituloRecurso` | Título ou descrição breve do recurso                                        |
-| `tipoRecurso`   | Tipo do recurso (ver [Tipos Suportados](#📁-tipos-de-ficheiros-suportados)) |
-| `descricao`     | Descrição mais completa (opcional mas recomendada)                          |
-| `tags`          | Lista de palavras-chave para facilitar a pesquisa (opcional)                |
+| Campo           | Descrição                                                                |
+| --------------- | ------------------------------------------------------------------------ |
+| `dataCriacao`   | Data em que o conteúdo foi criado                                        |
+| `dataSubmissao` | Data em que o ficheiro foi submetido à aplicação                         |
+| `produtor`      | Nome ou identificação de quem criou o conteúdo                           |
+| `publicador`    | Nome ou identificação de quem submeteu o ficheiro                        |
+| `titulo`        | Título ou descrição breve do recurso                                     |
+| `tipo`          | Tipo do recurso (ver [Tipos Suportados](#tipos-de-ficheiros-suportados)) |
+| `tags`          | Lista de palavras-chave (ver [Taxonomia](#taxonomia))                    |
 
-## 📦 Estrutura do Manifesto SIP (`manifesto-SIP.json`)
+## Estrutura do Manifesto SIP (`manifesto-SIP.json`)
 
 O manifesto é um ficheiro JSON (ou XML) incluído dentro do ficheiro `.zip` enviado pelo produtor. Ele define:
 
@@ -63,7 +104,7 @@ O manifesto é um ficheiro JSON (ou XML) incluído dentro do ficheiro `.zip` env
 - Os respetivos checksums
 - Os metadados associados ao conteúdo
 
-### 📄 Exemplo de `manifesto-SIP.json`
+### Exemplo de `manifesto-SIP.json`
 
 ```json
 {
@@ -81,7 +122,7 @@ O manifesto é um ficheiro JSON (ou XML) incluído dentro do ficheiro `.zip` env
 }
 ```
 
-### 🧪 Requisitos do Processo de Ingestão
+### Requisitos do Processo de Ingestão
 
 Ao receber o `.zip`, o backend deve:
 
@@ -91,7 +132,7 @@ Ao receber o `.zip`, o backend deve:
 4. Guardar os metadados na base de dados MongoDB.
 5. Armazenar os ficheiros fisicamente na pasta `uploads/`.
 
-## 🧱 Considerações Técnicas
+## Considerações Técnicas
 
 - A pasta `uploads/` deverá ser montada como volume Docker.
 - Os caminhos relativos dos ficheiros no manifesto devem coincidir com a estrutura do ZIP.

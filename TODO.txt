@@ -1,12 +1,3 @@
-Em primeiro lugar definir o tipo de ficheiros que queremos suportar, bem como os seus metadados e o manifesto a seguir a norma "BagIt"
-Tendo isso feito, tanto frontoffice como backoffice podem começar a ser desenvolvidas. O backoffice tera de implementar a base de dados seguindo as normas de metadados e manifesto definidas. O backoffice terá tambem um ambiente de ficheiros dedicado, onde guardará o "payload". Serao tambem definidas APIs para pedidos ao backoffice, como inserção de dados, remoção de dados, etc.
-Este backoffice terá tambem de ter um sistema de Logs, que imprimirá no ecra, bem como guardará em ficheiro os dados.
-Este backoffice terá tembem de ter uma base de dados de utilizadores, com tambem API para manipular esses utilizadores.
-Estas funcionalidades serão permitidas a partir de um administrador, pelo que vai haver necessidade de implementar autenticação.
-Por fim, um frontoffice que permitirá login e interação com as APIs a partir de uma interface visual.
-
-MARKDOWN:
-
 # Plano de Projeto para o Desenvolvimento da Aplicação “Eu Digital”
 
 Este documento descreve os passos essenciais para implementar o projeto de Engenharia Web, baseado na análise e na norma “BagIt” para o manifesto.
