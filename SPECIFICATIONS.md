@@ -33,6 +33,10 @@ A aplicação deverá aceitar os seguintes tipos de ficheiros, divididos por cat
 - `.mp4`
 - `.webm`
 
+## Outros
+
+Qualquer outro tipo de dados desconhecido ou não suportado cai nesta categoria.
+
 ## 🏷️ Metadados
 
 Todos os ficheiros submetidos devem ser acompanhados de metadados que descrevam o recurso. Estes metadados serão armazenados na base de dados MongoDB e utilizados para facilitar a pesquisa e categorização.
@@ -63,8 +67,8 @@ O manifesto é um ficheiro JSON (ou XML) incluído dentro do ficheiro `.zip` env
 
 ```json
 {
-  "bagitVersion": "0.97",
-  "payloadFiles": [
+  "version": "0.97",
+  "payload": [
     {
       "filename": "fotos/foto_aniversario.jpg",
       "checksum": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
@@ -73,17 +77,7 @@ O manifesto é um ficheiro JSON (ou XML) incluído dentro do ficheiro `.zip` env
       "filename": "documentos/registo_evento.pdf",
       "checksum": "1a2b3c4d5e6f7890123456789abcdef0123456789abcdef0123456789abcdef"
     }
-  ],
-  "metadados": {
-    "dataCriacao": "2025-03-15T20:00:00Z",
-    "dataSubmissao": "2025-04-07T10:15:30Z",
-    "produtor": "Maria Fernandes",
-    "publicador": "Maria Fernandes",
-    "tituloRecurso": "Jantar de Aniversário",
-    "tipoRecurso": "Fotografia",
-    "descricao": "Foto tirada durante o jantar de aniversário no restaurante X.",
-    "tags": ["aniversário", "jantar", "família"]
-  }
+  ]
 }
 ```
 
