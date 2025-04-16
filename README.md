@@ -47,3 +47,5 @@ Consulta o [DEVELOPERS.md](./DEVELOPERS.md) para instruções detalhadas de inst
 ## Equipa
 
 - A100612 - José Rodrigo Ferreira Matos
+- A100551 - Diogo Miguel Torres Moreira de Oliveira Pinto
+- A100756 - Mariana Miguel Leão Barros Oliveira Pinto
