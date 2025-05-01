@@ -6,6 +6,7 @@ WORKDIR /app
 # Copiar package.json e instalar dependências
 COPY package*.json ./
 RUN npm install
+RUN mkdir -p tmp_sips uploads logs
 
 # Copiar restante código da app
 COPY . .
@@ -14,4 +15,4 @@ COPY . .
 EXPOSE 3000
 
 # Iniciar a aplicação
-CMD ["node", "app.js"]
+CMD ["npm", "run", "dev"]
