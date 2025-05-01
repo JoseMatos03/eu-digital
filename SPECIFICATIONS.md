@@ -6,19 +6,19 @@ Este documento serve de guia para os programadores envolvidos no desenvolvimento
 
 A aplicação deverá aceitar os seguintes tipos de ficheiros, divididos por categoria:
 
-### Imagens
+### Imagem
 
 - `.jpg`, `.jpeg`
 - `.png`
 - `.gif`
 
-### Documentos
+### Documento
 
 - `.txt`
 - `.md` (Markdown)
 - `.pdf`
 
-### Ficheiros de Dados
+### Ficheiro de Dados
 
 - `.csv`
 - `.json`
@@ -97,12 +97,11 @@ Todos os ficheiros submetidos devem ser acompanhados de metadados que descrevam 
 
 ## Estrutura do Manifesto SIP (`manifesto-SIP.json`)
 
-O manifesto é um ficheiro JSON (ou XML) incluído dentro do ficheiro `.zip` enviado pelo produtor. Ele define:
+O manifesto é um ficheiro JSON incluído dentro do ficheiro `.zip` enviado pelo produtor. Ele define:
 
 - A versão do BagIt utilizada
 - Os ficheiros submetidos (payload)
 - Os respetivos checksums
-- Os metadados associados ao conteúdo
 
 ### Exemplo de `manifesto-SIP.json`
 
@@ -112,10 +111,12 @@ O manifesto é um ficheiro JSON (ou XML) incluído dentro do ficheiro `.zip` env
   "payload": [
     {
       "filename": "fotos/foto_aniversario.jpg",
+      "metadata": "metadata/foto_aniversario.json",
       "checksum": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "filename": "documentos/registo_evento.pdf",
+      "metadata": "metadata/registo_evento.pdf",
       "checksum": "1a2b3c4d5e6f7890123456789abcdef0123456789abcdef0123456789abcdef"
     }
   ]

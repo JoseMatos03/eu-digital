@@ -4,7 +4,12 @@
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
-    "dev": "nodemon app.js"
+    "test": "jest --runInBand",
+    "dev": "nodemon --watch . --ext js,pug --exec \"node app.js\"",
+    "clean:fs": "rimraf uploads/* tmp_sips/*",
+    "clean:docker": "docker compose down -v",
+    "clean": "npm run clean:docker && npm run clean:fs",
+    "fresh": "npm run clean && docker compose up --build"
   },
   "keywords": [],
   "author": "",
@@ -13,11 +18,17 @@
   "dependencies": {
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
+    "fs-extra": "^11.3.0",
     "mongoose": "^8.13.2",
     "multer": "^1.4.5-lts.2",
-    "pug": "^3.0.3"
+    "pug": "^3.0.3",
+    "unzipper": "^0.12.3"
   },
   "devDependencies": {
-    "nodemon": "^3.1.9"
+    "archiver": "^7.0.1",
+    "jest": "^29.7.0",
+    "nodemon": "^3.1.9",
+    "rimraf": "^6.0.1",
+    "supertest": "^7.1.0"
   }
 }

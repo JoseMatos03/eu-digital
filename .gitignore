@@ -15,3 +15,10 @@ src/logs/
 
 # Docker
 data/
+
+# tmp files
+tmp/
+tmp_sips/
+
+# other
+.DS_Store

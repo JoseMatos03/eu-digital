@@ -5,16 +5,22 @@ services:
     ports:
       - "27017:27017"
     volumes:
-      - ./data:/data/db
+      - mongo-data:/data/db
 
   backoffice:
     build: ./src
+    command: ["npm", "run", "dev"]
     ports:
       - "3000:3000"
     depends_on:
       - mongo
     volumes:
+      - ./src:/app
       - ./src/uploads:/app/uploads
       - ./src/logs:/app/logs
+      - ./src/tmp_sips:/app/tmp_sips
     environment:
       - MONGO_URI=mongodb://mongo:27017/eu-digital
+
+volumes:
+  mongo-data:

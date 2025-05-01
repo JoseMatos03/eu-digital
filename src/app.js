@@ -3,6 +3,8 @@ const express = require('express');
 const mongoose = require('mongoose');
 const path = require('path');
 
+const ingestRoutes = require('./routes/injest');
+
 const app = express();
 
 // MongoDB connection
@@ -17,6 +19,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: true }));
 
 // Routes
+app.use('/api', ingestRoutes);
 
 // Start server
 const PORT = process.env.PORT || 3000;
