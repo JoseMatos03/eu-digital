@@ -1,107 +1,191 @@
-const unzipper = require("unzipper");
-const crypto = require("crypto");
 const fs = require("fs-extra");
 const path = require("path");
 
 const logger = require("../utils/logger");
+const { bailIf } = require("../utils/helpers");
+
 const SIP = require("../models/SIP");
 const Resource = require("../models/Resource");
+const News = require("../models/News");
+const User = require("../models/User");
+const statsService = require("../utils/stats");
 
-exports.handleIngest = async (req, res, next) => {
-  const zipPath = req.file.path;
-  const tempDir = zipPath + "_dir";
+const oaisController = require("./oaisController");
 
-  try {
-    logger.info(`Upload SIP em curso: ${req.file.originalname}`);
-
-    // 1. Descomprimir o ZIP
-    await fs
-      .createReadStream(zipPath)
-      .pipe(unzipper.Extract({ path: tempDir }))
-      .promise();
-
-    // 2. Verificar e parsear manifesto
-    const manifestPath = path.join(tempDir, "manifesto-SIP.json");
-    if (!(await fs.pathExists(manifestPath))) {
-      logger.error(`Manifesto JSON não encontrado`);
-      throw new Error("manifesto-SIP.json não encontrado");
+module.exports = {
+  //
+  // === ADMIN: UTILIZADORES ===
+  //
+  listUsers: async (req, res, next) => {
+    try {
+      const users = await User.find().lean();
+      res.json(users);
+    } catch (err) {
+      next(err);
     }
-    const { version, payload } = await fs.readJSON(manifestPath);
-    logger.info(
-      `Versão do Manifesto: ${version}, Ficheiros: ${payload.length}`
-    );
+  },
 
-    // 3. Criar documento SIP
-    const sipDoc = await SIP.create({
-      version,
-      submittedAt: new Date(),
-      originalFilename: req.file.originalname,
-    });
-
-    const resourcesCreated = [];
-
-    for (const item of payload) {
-      const itemFilePath = path.join(tempDir, item.filename);
-      if (!(await fs.pathExists(itemFilePath))) {
-        logger.error(`Ficheiro em falta: ${item.filename}`);
-        throw new Error(`Ficheiro ${item.filename} em falta`);
-      }
-
-      const hash = crypto.createHash("sha256");
-      await new Promise((resolve) => {
-        fs.createReadStream(itemFilePath)
-          .on("data", (data) => hash.update(data))
-          .on("end", () => resolve());
-      });
-      const checksum = hash.digest("hex");
-      if (checksum !== item.checksum) {
-        logger.error(`Checksum inválido para ${item.filename}`);
-        throw new Error(`Checksum inválido para ${item.filename}`);
-      }
-
-      const metadataSrcPath = path.join(tempDir, item.metadata);
-      if (!(await fs.pathExists(metadataSrcPath))) {
-        logger.error(`Metadata JSON ${item.metadata} em falta`);
-        throw new Error(`Metadata JSON ${item.metadata} em falta`);
-      }
-      const metadataObj = await fs.readJSON(metadataSrcPath);
-
-      const tipoCat = metadataObj.tipo;
-      const baseDir = path.join("uploads", tipoCat);
-      const metaDir = path.join(baseDir, "metadata");
-      await fs.ensureDir(baseDir);
-      await fs.ensureDir(metaDir);
-
-      const destFilePath = path.join(baseDir, path.basename(item.filename));
-      const destMetaPath = path.join(metaDir, path.basename(item.metadata));
-      await fs.move(itemFilePath, destFilePath, { overwrite: true });
-      await fs.move(metadataSrcPath, destMetaPath, { overwrite: true });
-
-      const resourceDoc = await Resource.create({
-        sip: sipDoc._id,
-        filename: item.filename,
-        checksum,
-        metadata: metadataObj,
-        path: destFilePath,
-        tipo: tipoCat,
-      });
-
-      resourcesCreated.push(resourceDoc);
-      logger.info(`Recurso criado: ${item.filename} em ${tipoCat}`);
+  createUser: async (req, res, next) => {
+    try {
+      const data = req.body;
+      const user = await User.create(data);
+      logger.info(`Utilizador criado: ${user._id}`);
+      res.status(201).json(user);
+    } catch (err) {
+      next(err);
     }
+  },
 
-    await fs.remove(zipPath);
-    await fs.remove(tempDir);
+  updateUser: async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const data = req.body;
+      const user = await User.findByIdAndUpdate(id, data, { new: true });
+      bailIf(!user, "Utilizador não encontrado", next);
+      logger.info(`Utilizador atualizado: ${id}`);
+      res.json(user);
+    } catch (err) {
+      next(err);
+    }
+  },
 
-    logger.info(`Entrada SIP criada na BD: ${sipDoc._id}`);
-    res.status(201).json({
-      message: "Ingestão completa",
-      sipId: sipDoc._id,
-      resourcesCount: resourcesCreated.length,
-    });
-  } catch (err) {
-    await fs.remove(zipPath).catch(() => {});
-    await fs.remove(tempDir).catch(() => {});
-    next(err);
-  }
+  deleteUser: async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const user = await User.findByIdAndDelete(id);
+      bailIf(!user, "Utilizador não encontrado", next);
+      logger.info(`Utilizador eliminado: ${id}`);
+      res.json({ message: "Utilizador eliminado" });
+    } catch (err) {
+      next(err);
+    }
+  },
+
+  //
+  // === ADMIN: RECURSOS (AIPs) ===
+  //
+  listResources: async (req, res, next) => {
+    try {
+      const resources = await Resource.find().lean();
+      res.json(resources);
+    } catch (err) {
+      next(err);
+    }
+  },
+
+  createResource: async (req, res, next) => {
+    // Chama o controlador de ingestão SIP
+    return oaisController.handleIngest(req, res, next);
+  },
+
+  updateResource: async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const data = req.body;
+      const r = await Resource.findByIdAndUpdate(id, data, { new: true });
+      bailIf(!r, "Recurso não encontrado", next);
+      logger.info(`Recurso atualizado: ${id}`);
+      res.json(r);
+    } catch (err) {
+      next(err);
+    }
+  },
+
+  deleteResource: async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const r = await Resource.findById(id);
+      bailIf(!r, "Recurso não encontrado", next);
+
+      // Remover ficheiro do filesystem
+      await fs.remove(path.resolve(r.path));
+      logger.info(`Ficheiro removido do disco: ${r.path}`);
+
+      // Remover metadados armazenados em /uploads/.../metadata (se existirem)
+      const metaFile = path.join(
+        "uploads",
+        r.tipo,
+        "metadata",
+        `${path.basename(r.filename)}.json`
+      );
+      await fs.remove(path.resolve(metaFile)).catch(() => {});
+      logger.info(`Metadados removidos: ${metaFile}`);
+
+      // Finalmente apagar da BD
+      await Resource.findByIdAndDelete(id);
+      logger.info(`Recurso eliminado da BD: ${id}`);
+
+      res.json({ message: "Recurso eliminado com sucesso" });
+    } catch (err) {
+      next(err);
+    }
+  },
+
+  exportResource: async (req, res, next) => {
+    // Monta um corpo falso com resourceIds = [id]
+    req.body.resourceIds = [req.params.id];
+    return oaisController.handleDisseminate(req, res, next);
+  },
+  //
+  // === ADMIN: NOTÍCIAS ===
+  //
+  listNews: async (req, res, next) => {
+    try {
+      const news = await News.find().lean();
+      res.json(news);
+    } catch (err) {
+      next(err);
+    }
+  },
+
+  createNews: async (req, res, next) => {
+    try {
+      const data = req.body;
+      data.visible = data.visible ?? true;
+      const n = await News.create(data);
+      logger.info(`Notícia criada: ${n._id}`);
+      res.status(201).json(n);
+    } catch (err) {
+      next(err);
+    }
+  },
+
+  updateNews: async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const data = req.body;
+      const n = await News.findByIdAndUpdate(id, data, { new: true });
+      bailIf(!n, "Notícia não encontrada", next);
+      logger.info(`Notícia atualizada: ${id}`);
+      res.json(n);
+    } catch (err) {
+      next(err);
+    }
+  },
+
+  toggleNewsVisibility: async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const n = await News.findById(id);
+      bailIf(!n, "Notícia não encontrada", next);
+      n.visible = !n.visible;
+      await n.save();
+      logger.info(`Visibilidade alterada para ${n.visible} na notícia ${id}`);
+      res.json(n);
+    } catch (err) {
+      next(err);
+    }
+  },
+
+  //
+  // === ADMIN: ESTATÍSTICAS ===
+  //
+  getStats: async (req, res, next) => {
+    try {
+      const stats = await statsService.computeUsageStatistics();
+      res.json(stats);
+    } catch (err) {
+      next(err);
+    }
+  },
 };
