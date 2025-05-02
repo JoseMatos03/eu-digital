@@ -1,0 +1,11 @@
+extends layouts/layout
+
+block content
+  h2 Admin Dashboard
+  p Olá #{user.username}, estás na área de administração.
+  ul
+    li: a(href="/api/admin/users")      Gerir utilizadores
+    li: a(href="/api/admin/resources")  Gerir recursos
+    li: a(href="/api/admin/news")       Gerir notícias
+    li: a(href="/api/admin/stats")      Ver estatísticas
+  p: a(href="/logout") Sair

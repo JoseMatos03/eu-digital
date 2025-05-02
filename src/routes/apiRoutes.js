@@ -5,6 +5,8 @@ const router = express.Router();
 const oaisController = require("../controllers/oaisController");
 const apiController = require("../controllers/apiController");
 
+const { ensureAdmin } = require("../utils/auth");
+
 const upload = multer({ dest: "tmp_sips/" });
 
 // OAIS protocol
@@ -37,4 +39,5 @@ router.patch("/admin/news/:id/visibility", apiController.toggleNewsVisibility);
 // Statistics calls
 router.get("/admin/stats", apiController.getStats);
 
+router.use("/admin", ensureAdmin);
 module.exports = router;

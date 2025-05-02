@@ -7,3 +7,10 @@ exports.renderHome = (req, res) => {
     message: "Bem-vindo à plataforma Eu Digital!",
   });
 };
+
+exports.renderAdmin = (req, res) => {
+  res.render("admin", {
+    title: "Admin Dashboard",
+    user: req.user,
+  });
+};
