@@ -175,6 +175,18 @@ module.exports = {
     }
   },
 
+  deleteNews: async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const n = await News.findByIdAndDelete(id);
+      bailIf(!n, "Notícia não encontrada", next);
+      logger.info(`Notícia eliminada: ${id}`);
+      res.json({ message: "Notícia eliminada com sucesso" });
+    } catch (err) {
+      next(err);
+    }
+  },
+
   toggleNewsVisibility: async (req, res, next) => {
     try {
       const { id } = req.params;
