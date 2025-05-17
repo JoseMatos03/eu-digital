@@ -33,6 +33,21 @@ exports.usersCreateForm = (req, res) => {
   res.render("admin/userForm", { title: "Criar Utilizador", user: {} });
 };
 
+exports.usersEditForm = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const user = await User.findById(id).lean();
+    if (!user) return res.status(404).send("Utilizador não encontrado");
+    delete user.passwordHash; // don't pass the password into the view
+    res.render("admin/userEdit", {
+      title: "Editar Utilizador",
+      user,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
 exports.newsList = async (req, res, next) => {
   try {
     const news = await News.find().lean();

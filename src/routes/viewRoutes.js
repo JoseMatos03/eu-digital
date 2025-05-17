@@ -11,6 +11,7 @@ router.get("/", viewController.renderHome);
 router.get("/admin", ensureAdmin, viewController.renderAdmin);
 router.get("/admin/users", ensureAdmin, viewController.usersList);
 router.get("/admin/users/create", ensureAdmin, viewController.usersCreateForm);
+router.get("/admin/users/:id", ensureAdmin, viewController.usersEditForm);
 router.get("/admin/news", ensureAdmin, viewController.newsList);
 router.get("/admin/news/create", ensureAdmin, viewController.newsCreateForm);
 router.get("/admin/resources", ensureAdmin, viewController.resourcesList);

@@ -17,7 +17,7 @@ block content
           td= u.email
           td= u.role
           td
-            a(href=`/api/admin/users/${u._id}`) Editar
+            a(href=`/admin/users/${u._id}`) Editar
             form(method="post", action=`/api/admin/users/${u._id}`, style="display:inline")
               input(type="hidden", name="_method", value="DELETE")
               button(type="submit") 🗑️

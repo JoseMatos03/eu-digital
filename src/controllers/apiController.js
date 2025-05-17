@@ -47,7 +47,17 @@ module.exports = {
     try {
       const { id } = req.params;
       const data = req.body;
-      const user = await User.findByIdAndUpdate(id, data, { new: true });
+
+      // hash password
+      if (data.password) {
+        data.passwordHash = await bcrypt.hash(data.password, 12);
+      }
+      delete data.password; // remove raw password
+
+      const user = await User.findByIdAndUpdate(id, data, {
+        new: true,
+        runValidators: true,
+      }).lean();
       bailIf(!user, "Utilizador não encontrado", next);
       logger.info(`Utilizador atualizado: ${id}`);
       res.json(user);
