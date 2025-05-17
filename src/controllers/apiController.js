@@ -118,17 +118,7 @@ module.exports = {
       await fs.remove(path.resolve(r.path));
       logger.info(`Ficheiro removido do disco: ${r.path}`);
 
-      // Remover metadados armazenados em /uploads/.../metadata (se existirem)
-      const metaFile = path.join(
-        "uploads",
-        r.tipo,
-        "metadata",
-        `${path.basename(r.filename)}.json`
-      );
-      await fs.remove(path.resolve(metaFile)).catch(() => {});
-      logger.info(`Metadados removidos: ${metaFile}`);
-
-      // Finalmente apagar da BD
+      // Apagar da BD
       await Resource.findByIdAndDelete(id);
       logger.info(`Recurso eliminado da BD: ${id}`);
 

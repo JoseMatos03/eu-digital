@@ -70,6 +70,14 @@ exports.resourcesList = async (req, res, next) => {
   }
 };
 
+exports.resourcesImport = async (req, res, next) => {
+  try {
+    res.render("admin/resourcesImport", { title: "Importar Recurso" });
+  } catch (err) {
+    next(err);
+  }
+};
+
 exports.statsPage = async (req, res, next) => {
   try {
     const stats = await statsService.computeUsageStatistics();

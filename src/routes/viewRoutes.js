@@ -15,6 +15,11 @@ router.get("/admin/users/:id", ensureAdmin, viewController.usersEditForm);
 router.get("/admin/news", ensureAdmin, viewController.newsList);
 router.get("/admin/news/create", ensureAdmin, viewController.newsCreateForm);
 router.get("/admin/resources", ensureAdmin, viewController.resourcesList);
+router.get(
+  "/admin/resources/import",
+  ensureAdmin,
+  viewController.resourcesImport
+);
 router.get("/admin/stats", ensureAdmin, viewController.statsPage);
 
 module.exports = router;
