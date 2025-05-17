@@ -44,7 +44,7 @@ async function computeUsageStatistics() {
       if (msg.includes("DIP exportado com sucesso")) {
         stats.exports++;
       }
-      if (msg.includes("Homepage viewed")) {
+      if (msg.includes("Homepage acedida")) {
         stats.homeViews++;
       }
     }

@@ -1,0 +1,10 @@
+extends ../layouts/layout
+
+block content
+  h2= title
+  ul
+    li Total de logs: #{stats.totalLogs}
+    li Ingestões (SIP): #{stats.ingests}
+    li Exportações (DIP): #{stats.exports}
+    li Erros: #{stats.errors}
+    li Visualizações de homepage: #{stats.homeViews}

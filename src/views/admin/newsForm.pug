@@ -1,0 +1,15 @@
+extends ../layouts/layout
+
+block content
+  h2= title
+  form(method="post", action="/api/admin/news")
+    div
+      label Título
+      input(type="text", name="title", value=news.title||'')
+    div
+      label Conteúdo
+      textarea(name="content")= news.content||''
+    div
+      label Visível?
+      input(type="checkbox", name="visible", checked=news.visible)
+    button(type="submit") Guardar

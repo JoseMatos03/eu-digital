@@ -1,10 +1,10 @@
+const bcrypt = require("bcryptjs");
 const fs = require("fs-extra");
 const path = require("path");
 
 const logger = require("../utils/logger");
 const { bailIf } = require("../utils/helpers");
 
-const SIP = require("../models/SIP");
 const Resource = require("../models/Resource");
 const News = require("../models/News");
 const User = require("../models/User");
@@ -28,6 +28,13 @@ module.exports = {
   createUser: async (req, res, next) => {
     try {
       const data = req.body;
+
+      // Hash the password
+      if (data.password) {
+        data.passwordHash = await bcrypt.hash(data.password, 12);
+        delete data.password; // remove plain password from body
+      }
+
       const user = await User.create(data);
       logger.info(`Utilizador criado: ${user._id}`);
       res.status(201).json(user);
@@ -40,7 +47,17 @@ module.exports = {
     try {
       const { id } = req.params;
       const data = req.body;
-      const user = await User.findByIdAndUpdate(id, data, { new: true });
+
+      // hash password
+      if (data.password) {
+        data.passwordHash = await bcrypt.hash(data.password, 12);
+      }
+      delete data.password; // remove raw password
+
+      const user = await User.findByIdAndUpdate(id, data, {
+        new: true,
+        runValidators: true,
+      }).lean();
       bailIf(!user, "Utilizador não encontrado", next);
       logger.info(`Utilizador atualizado: ${id}`);
       res.json(user);
@@ -101,17 +118,7 @@ module.exports = {
       await fs.remove(path.resolve(r.path));
       logger.info(`Ficheiro removido do disco: ${r.path}`);
 
-      // Remover metadados armazenados em /uploads/.../metadata (se existirem)
-      const metaFile = path.join(
-        "uploads",
-        r.tipo,
-        "metadata",
-        `${path.basename(r.filename)}.json`
-      );
-      await fs.remove(path.resolve(metaFile)).catch(() => {});
-      logger.info(`Metadados removidos: ${metaFile}`);
-
-      // Finalmente apagar da BD
+      // Apagar da BD
       await Resource.findByIdAndDelete(id);
       logger.info(`Recurso eliminado da BD: ${id}`);
 
@@ -141,7 +148,8 @@ module.exports = {
   createNews: async (req, res, next) => {
     try {
       const data = req.body;
-      data.visible = data.visible ?? true;
+      data.visible = req.body.visible === "on";
+
       const n = await News.create(data);
       logger.info(`Notícia criada: ${n._id}`);
       res.status(201).json(n);
@@ -154,10 +162,26 @@ module.exports = {
     try {
       const { id } = req.params;
       const data = req.body;
-      const n = await News.findByIdAndUpdate(id, data, { new: true });
+      data.visible = req.body.visible === "on";
+      const n = await News.findByIdAndUpdate(id, data, {
+        new: true,
+        runValidators: true,
+      });
       bailIf(!n, "Notícia não encontrada", next);
       logger.info(`Notícia atualizada: ${id}`);
       res.json(n);
+    } catch (err) {
+      next(err);
+    }
+  },
+
+  deleteNews: async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const n = await News.findByIdAndDelete(id);
+      bailIf(!n, "Notícia não encontrada", next);
+      logger.info(`Notícia eliminada: ${id}`);
+      res.json({ message: "Notícia eliminada com sucesso" });
     } catch (err) {
       next(err);
     }

@@ -1,0 +1,23 @@
+extends ../layouts/layout
+
+block content
+  h2= title
+  form(method="post", action=`/api/admin/news/${news._id}`, enctype="application/x-www-form-urlencoded")
+    // override to PUT
+    input(type="hidden", name="_method", value="PUT")
+
+    div
+      label(for="title") Título
+      input#title(type="text", name="title", required, value=news.title)
+
+    div
+      label(for="content") Conteúdo
+      textarea#content(name="content", required)= news.content
+
+    div
+      label(for="visible") Visível?
+      input#visible(type="checkbox", name="visible", value="on", checked=news.visible)
+
+    div.button-group
+      button(type="submit") 💾 Guardar Alterações
+      a.button(href="/admin/news") Cancelar
