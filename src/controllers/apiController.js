@@ -1,10 +1,10 @@
+const bcrypt = require("bcryptjs");
 const fs = require("fs-extra");
 const path = require("path");
 
 const logger = require("../utils/logger");
 const { bailIf } = require("../utils/helpers");
 
-const SIP = require("../models/SIP");
 const Resource = require("../models/Resource");
 const News = require("../models/News");
 const User = require("../models/User");
@@ -28,6 +28,13 @@ module.exports = {
   createUser: async (req, res, next) => {
     try {
       const data = req.body;
+
+      // Hash the password
+      if (data.password) {
+        data.passwordHash = await bcrypt.hash(data.password, 12);
+        delete data.password; // remove plain password from body
+      }
+
       const user = await User.create(data);
       logger.info(`Utilizador criado: ${user._id}`);
       res.status(201).json(user);

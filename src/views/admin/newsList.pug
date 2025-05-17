@@ -1,0 +1,13 @@
+extends ../layouts/layout
+
+block content
+  h2= title
+  a(href="/admin/news/create") ➕ Criar nova notícia
+  each n in news
+    article
+      h3= n.title
+      p= n.content
+      p Visível? #{n.visible}
+      a(href=`/api/admin/news/${n._id}`) Editar
+      form(method="post", action=`/api/admin/news/${n._id}/visibility?_method=PATCH`, style="display:inline")
+        button(type="submit") 🔄 Visibilidade

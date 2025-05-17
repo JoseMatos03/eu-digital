@@ -16,10 +16,40 @@ const authRoutes = require("./routes/authRoutes");
 
 const app = express();
 
+// THIS IS JUST A HELPER FUNCTION FOR DEVELOPMENT
+// WILL BE REMOVED IN FINAL IMPLEMENTATION
+async function seedAdmin() {
+  const username = process.env.ADMIN_USER;
+  const email = process.env.ADMIN_EMAIL;
+  const password = process.env.ADMIN_PASS;
+  if (!username || !email || !password) {
+    console.warn("ADMIN_USER/EMAIL/PASS not set — skipping admin seed");
+    return;
+  }
+
+  const existing = await User.findOne({ role: "admin" });
+  if (existing) {
+    console.log(`Admin user already exists: ${existing.username}`);
+    return;
+  }
+
+  const passwordHash = await bcrypt.hash(password, 12);
+  const admin = await User.create({
+    username,
+    email,
+    passwordHash,
+    role: "admin",
+  });
+  console.log(`Seeded admin user: ${admin.username}`);
+}
+
 // MongoDB connection
 mongoose
   .connect(process.env.MONGO_URI || "mongodb://mongo:27017/eu-digital")
-  .then(() => logger.info("Connectado ao MongoDB"))
+  .then(async () => {
+    await seedAdmin();
+    logger.info("Connectado ao MongoDB");
+  })
   .catch((err) => logger.error("Erro de conexão do MongoDB:", err));
 
 // Config
@@ -28,6 +58,15 @@ app.set("views", path.join(__dirname, "views"));
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Middleware to override POST method with DELETE
+app.use((req, res, next) => {
+  if (req.body && req.body._method) {
+    req.method = req.body._method.toUpperCase();
+    delete req.body._method;
+  }
+  next();
+});
 
 // Session middleware
 app.use(
