@@ -8,6 +8,7 @@ block content
       h3= n.title
       p= n.content
       p Visível? #{n.visible}
-      a(href=`/api/admin/news/${n._id}`) Editar
-      form(method="post", action=`/api/admin/news/${n._id}/visibility?_method=PATCH`, style="display:inline")
+      a(href=`/admin/news/${n._id}`) Editar
+      form(method="post", action=`/api/admin/news/${n._id}/visibility`, style="display:inline")
+        input(type="hidden", name="_method", value="PATCH")
         button(type="submit") 🔄 Visibilidade

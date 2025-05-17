@@ -14,6 +14,7 @@ router.get("/admin/users/create", ensureAdmin, viewController.usersCreateForm);
 router.get("/admin/users/:id", ensureAdmin, viewController.usersEditForm);
 router.get("/admin/news", ensureAdmin, viewController.newsList);
 router.get("/admin/news/create", ensureAdmin, viewController.newsCreateForm);
+router.get("/admin/news/:id", ensureAdmin, viewController.newsEditForm);
 router.get("/admin/resources", ensureAdmin, viewController.resourcesList);
 router.get(
   "/admin/resources/import",

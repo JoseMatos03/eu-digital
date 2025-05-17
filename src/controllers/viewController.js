@@ -61,6 +61,20 @@ exports.newsCreateForm = (req, res) => {
   res.render("admin/newsForm", { title: "Criar Notícia", news: {} });
 };
 
+exports.newsEditForm = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const news = await News.findById(id).lean();
+    if (!news) return res.status(404).send("Notícia não encontrada");
+    res.render("admin/newsEdit", {
+      title: "Editar Notícia",
+      news,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
 exports.resourcesList = async (req, res, next) => {
   try {
     const resources = await Resource.find().lean();

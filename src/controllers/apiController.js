@@ -148,7 +148,8 @@ module.exports = {
   createNews: async (req, res, next) => {
     try {
       const data = req.body;
-      data.visible = data.visible ?? true;
+      data.visible = req.body.visible === "on";
+
       const n = await News.create(data);
       logger.info(`Notícia criada: ${n._id}`);
       res.status(201).json(n);
@@ -161,7 +162,11 @@ module.exports = {
     try {
       const { id } = req.params;
       const data = req.body;
-      const n = await News.findByIdAndUpdate(id, data, { new: true });
+      data.visible = req.body.visible === "on";
+      const n = await News.findByIdAndUpdate(id, data, {
+        new: true,
+        runValidators: true,
+      });
       bailIf(!n, "Notícia não encontrada", next);
       logger.info(`Notícia atualizada: ${id}`);
       res.json(n);
