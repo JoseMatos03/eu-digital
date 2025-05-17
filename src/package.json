@@ -6,6 +6,7 @@
     "start": "node server.js",
     "test": "jest --runInBand",
     "dev": "nodemon --watch . --ext js,pug --exec \"node server.js\"",
+    "docker": "docker compose up --build",
     "clean:fs": "rimraf uploads/* tmp_sips/* logs/*",
     "clean:docker": "docker compose down -v",
     "clean": "npm run clean:docker && npm run clean:fs",
