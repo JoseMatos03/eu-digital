@@ -2,8 +2,7 @@ extends ../layouts/layout
 
 block content
   h2= title
-  form(method="post", action=`/api/admin/news/${news._id}`, enctype="application/x-www-form-urlencoded")
-    // override to PUT
+  form(method="post", action=`/api/admin/news/${news._id}`, enctype="application/x-www-form-urlencoded", data-ajax, data-redirect="/admin/news")
     input(type="hidden", name="_method", value="PUT")
 
     div
