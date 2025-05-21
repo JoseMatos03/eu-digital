@@ -1,11 +1,11 @@
 const express = require("express");
 const router = express.Router();
 
-const { ensureAdmin } = require("../utils/auth");
+const { ensureAdmin, ensureAuthenticated } = require("../utils/auth");
 const viewController = require("../controllers/viewController");
 
 // Normal routes
-router.get("/", viewController.renderHome);
+router.get("/", ensureAuthenticated, viewController.renderHome);
 
 // Admin routes
 router.get("/admin", ensureAdmin, viewController.renderAdmin);
