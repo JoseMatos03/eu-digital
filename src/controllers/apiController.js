@@ -128,6 +128,20 @@ module.exports = {
     }
   },
 
+  toggleResourcePublic: async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const r = await Resource.findById(id);
+      bailIf(!r, "Recurso não encontrado", next);
+      r.public = !r.public;
+      await r.save();
+      logger.info(`Visibilidade mudada para ${r.public} para o recurso ${id}`);
+      res.json(r);
+    } catch (err) {
+      next(err);
+    }
+  },
+
   exportResource: async (req, res, next) => {
     // Monta um corpo falso com resourceIds = [id]
     req.body.resourceIds = [req.params.id];

@@ -28,6 +28,7 @@ router.post(
 );
 router.put("/admin/resources/:id", apiController.updateResource);
 router.delete("/admin/resources/:id", apiController.deleteResource);
+router.patch("/admin/resources/:id/public", apiController.toggleResourcePublic);
 router.post("/admin/resources/:id/export", apiController.exportResource);
 
 // News administrative API calls
