@@ -89,8 +89,8 @@ Todos os ficheiros submetidos devem ser acompanhados de metadados que descrevam 
 | --------------- | ------------------------------------------------------------------------ |
 | `dataCriacao`   | Data em que o conteúdo foi criado                                        |
 | `dataSubmissao` | Data em que o ficheiro foi submetido à aplicação                         |
-| `produtor`      | Nome ou identificação de quem criou o conteúdo                           |
-| `publicador`    | Nome ou identificação de quem submeteu o ficheiro                        |
+| `produtor`      | Identificação de quem criou o conteúdo                                   |
+| `publicador`    | Identificação de quem submeteu o ficheiro                                |
 | `titulo`        | Título ou descrição breve do recurso                                     |
 | `tipo`          | Tipo do recurso (ver [Tipos Suportados](#tipos-de-ficheiros-suportados)) |
 | `tags`          | Lista de palavras-chave (ver [Taxonomia](#taxonomia))                    |

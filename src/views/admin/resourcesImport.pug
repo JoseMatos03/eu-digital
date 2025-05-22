@@ -2,7 +2,7 @@ extends ../layouts/layout
 
 block content
   h2 Importar SIP
-  form(method="post", action="/api/admin/resources", enctype="multipart/form-data")
+  form(method="post", action="/api/admin/resources", enctype="multipart/form-data", data-ajax, data-redirect="/admin/resources")
     div
       label Escolher ficheiro ZIP
       input(type="file", name="sip")

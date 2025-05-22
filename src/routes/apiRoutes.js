@@ -4,15 +4,21 @@ const router = express.Router();
 
 const oaisController = require("../controllers/oaisController");
 const apiController = require("../controllers/apiController");
+const commentController = require("../controllers/commentController");
 
-const { ensureAdmin } = require("../utils/auth");
+const { ensureAdmin, ensureAuthenticated } = require("../utils/auth");
 
 const upload = multer({ dest: "tmp_sips/" });
 
-// OAIS protocol
+//
+// OAIS PROTOCOL
+//
 router.post("/ingest", upload.single("sip"), oaisController.handleIngest);
 router.post("/disseminate", oaisController.handleDisseminate);
 
+//
+// ADMIN API ROUTES
+//
 // User administrative API calls
 router.get("/admin/users", apiController.listUsers);
 router.post("/admin/users", apiController.createUser);
@@ -28,6 +34,7 @@ router.post(
 );
 router.put("/admin/resources/:id", apiController.updateResource);
 router.delete("/admin/resources/:id", apiController.deleteResource);
+router.patch("/admin/resources/:id/public", apiController.toggleResourcePublic);
 router.post("/admin/resources/:id/export", apiController.exportResource);
 
 // News administrative API calls
@@ -40,5 +47,35 @@ router.patch("/admin/news/:id/visibility", apiController.toggleNewsVisibility);
 // Statistics calls
 router.get("/admin/stats", apiController.getStats);
 
-router.use("/admin", ensureAdmin);
+//
+// COMMENTS
+//
+router.get(
+  "/resources/:id/comments",
+  ensureAuthenticated,
+  commentController.listComments
+);
+router.post(
+  "/resources/:id/comments",
+  ensureAuthenticated,
+  commentController.createComment
+);
+
+//
+// RESOURCES
+//
+router.get("/resources/:id", ensureAuthenticated, apiController.getResource);
+router.post(
+  "/resources",
+  ensureAuthenticated,
+  upload.single("sip"),
+  apiController.createResource
+);
+router.post(
+  "/resources/:id/export",
+  ensureAuthenticated,
+  apiController.exportResource
+);
+
+router.use("/admin", ensureAdmin); // ensure user is admin in admin routes
 module.exports = router;

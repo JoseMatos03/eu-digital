@@ -43,11 +43,37 @@ async function seedAdmin() {
   console.log(`Seeded admin user: ${admin.username}`);
 }
 
+async function seedTestUser() {
+  const username = process.env.TEST_USER;
+  const email = process.env.TEST_EMAIL;
+  const password = process.env.TEST_PASS;
+  if (!username || !email || !password) {
+    console.warn("TEST_USER/EMAIL/PASS not set — skipping test user seed");
+    return;
+  }
+
+  const existing = await User.findOne({ role: "user" });
+  if (existing) {
+    console.log(`Test user already exists: ${existing.username}`);
+    return;
+  }
+
+  const passwordHash = await bcrypt.hash(password, 12);
+  const admin = await User.create({
+    username,
+    email,
+    passwordHash,
+    role: "user",
+  });
+  console.log(`Seeded test user user: ${admin.username}`);
+}
+
 // MongoDB connection
 mongoose
   .connect(process.env.MONGO_URI || "mongodb://mongo:27017/eu-digital")
   .then(async () => {
     await seedAdmin();
+    await seedTestUser();
     logger.info("Connectado ao MongoDB");
   })
   .catch((err) => logger.error("Erro de conexão do MongoDB:", err));
@@ -56,6 +82,7 @@ mongoose
 app.set("view engine", "pug");
 app.set("views", path.join(__dirname, "views"));
 app.use(express.static(path.join(__dirname, "public")));
+app.use("/uploads", express.static(path.join(__dirname, "uploads"))); // upload middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

@@ -1,5 +1,41 @@
 extends layouts/layout
 
 block content
-  h2= message
-  p Esta é a página inicial do projeto Eu Digital.
+  h2= title
+  p Olá #{user.username}!
+
+  form(method="get", action="/")
+    .filters
+      input(type="text" name="search" placeholder="Procurar título..." value=filters.search)
+      select(name="tag")
+        option(value="") Todas as categorias
+        each t in tagOptions
+          option(value=t selected=(filters.tag===t))= t
+      input(type="date" name="dateFrom" value=filters.dateFrom)
+      input(type="date" name="dateTo"   value=filters.dateTo)
+      button(type="submit") Filtrar
+
+  if resources.length
+    ul.resource-list
+      each r in resources
+        li.resource-item
+          h3= r.metadata.titulo
+          p Tipo: #{r.metadata.tipo} | Categorias: #{r.metadata.tags.join(', ')}
+          p Data: #{new Date(r.metadata.dataCriacao).toLocaleDateString()}
+          if r.metadata.publicador === user.username
+            span.tag Proprietário
+          else
+            span.tag Público
+          a.button(href="#", data-id=r._id) Ver
+          form(method="post", action=`/api/admin/resources/${r._id}/export`, style="display:inline")
+            button(type="submit") 📦 Exportar
+  else
+    p Não há recursos para mostrar.
+
+  form(method="post", action="/api/admin/resources", enctype="multipart/form-data", data-ajax)
+    div
+      label Escolher ficheiro ZIP
+      input(type="file", name="sip")
+    button(type="submit") Upload
+
+  include partials/resourceModal.pug

@@ -2,15 +2,50 @@ const Resource = require("../models/Resource");
 const User = require("../models/User");
 const News = require("../models/News");
 const statsService = require("../utils/stats");
+const taxonomy = require("../utils/taxonomy");
 
-const logger = require("../utils/logger");
+exports.renderHome = async (req, res, next) => {
+  try {
+    const { tag, dateFrom, dateTo, search } = req.query;
+    const userName = req.user.username;
 
-exports.renderHome = (req, res) => {
-  logger.info(`Homepage acedida por ${req.ip}`);
-  res.render("index", {
-    title: "Eu Digital",
-    message: "Bem-vindo à plataforma Eu Digital!",
-  });
+    // Only public OR owned by this user
+    const filter = {
+      $or: [{ public: true }, { "metadata.publicador": userName }],
+    };
+
+    // apply taxonomy‐tag filter
+    if (tag) {
+      filter["metadata.tags"] = tag;
+    }
+    // date range
+    if (dateFrom || dateTo) {
+      filter["metadata.dataCriacao"] = {};
+      if (dateFrom) filter["metadata.dataCriacao"].$gte = new Date(dateFrom);
+      if (dateTo) filter["metadata.dataCriacao"].$lte = new Date(dateTo);
+    }
+    // title search
+    if (search) {
+      filter["metadata.titulo"] = { $regex: search, $options: "i" };
+    }
+
+    // fetch + sort
+    const resources = await Resource.find(filter)
+      .sort({ "metadata.dataCriacao": -1 })
+      .lean();
+
+    const tagOptions = taxonomy.getFlatTags();
+
+    res.render("index", {
+      title: "Eu Digital – Diário",
+      user: req.user,
+      resources,
+      tagOptions,
+      filters: { tag, dateFrom, dateTo, search },
+    });
+  } catch (err) {
+    next(err);
+  }
 };
 
 exports.renderAdmin = (req, res) => {
