@@ -4,15 +4,21 @@ const router = express.Router();
 
 const oaisController = require("../controllers/oaisController");
 const apiController = require("../controllers/apiController");
+const commentController = require("../controllers/commentController");
 
-const { ensureAdmin } = require("../utils/auth");
+const { ensureAdmin, ensureAuthenticated } = require("../utils/auth");
 
 const upload = multer({ dest: "tmp_sips/" });
 
-// OAIS protocol
+//
+// OAIS PROTOCOL
+//
 router.post("/ingest", upload.single("sip"), oaisController.handleIngest);
 router.post("/disseminate", oaisController.handleDisseminate);
 
+//
+// ADMIN API ROUTES
+//
 // User administrative API calls
 router.get("/admin/users", apiController.listUsers);
 router.post("/admin/users", apiController.createUser);
@@ -41,5 +47,19 @@ router.patch("/admin/news/:id/visibility", apiController.toggleNewsVisibility);
 // Statistics calls
 router.get("/admin/stats", apiController.getStats);
 
-router.use("/admin", ensureAdmin);
+//
+// COMMENTS
+//
+router.get(
+  "/resources/:id/comments",
+  ensureAuthenticated,
+  commentController.listComments
+);
+router.post(
+  "/resources/:id/comments",
+  ensureAuthenticated,
+  commentController.createComment
+);
+
+router.use("/admin", ensureAdmin); // ensure user is admin in admin routes
 module.exports = router;

@@ -10,4 +10,14 @@ const resourceSchema = new Schema({
   path: { type: String, required: true }, // caminho final no uploads/
 });
 
+resourceSchema.virtual("comments", {
+  ref: "Comment",
+  localField: "_id",
+  foreignField: "resource",
+  justOne: false,
+});
+
+resourceSchema.set("toObject", { virtuals: true });
+resourceSchema.set("toJSON", { virtuals: true });
+
 module.exports = mongoose.model("Resource", resourceSchema);
