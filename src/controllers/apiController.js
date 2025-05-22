@@ -226,4 +226,18 @@ module.exports = {
       next(err);
     }
   },
+
+  //
+  // RESOURCES
+  //
+  getResource: async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const r = await Resource.findById(id).lean();
+      bailIf(!r, "Recurso não encontrado", next);
+      res.json(r);
+    } catch (err) {
+      next(err);
+    }
+  },
 };

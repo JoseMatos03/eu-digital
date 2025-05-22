@@ -1,0 +1,46 @@
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  justify-content: center;
+  align-items: center;
+}
+.modal.open {
+  display: flex;
+}
+.modal-content {
+  background: white;
+  display: flex;
+  width: 80%;
+  height: 80%;
+}
+.modal-left {
+  flex: 3;
+  padding: 1rem;
+  overflow: auto;
+}
+.modal-right {
+  flex: 1;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+.modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+}
+.resource-list li {
+  cursor: pointer;
+}
+.resource-list a.button {
+  cursor: pointer;
+}

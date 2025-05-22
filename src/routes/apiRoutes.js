@@ -61,5 +61,10 @@ router.post(
   commentController.createComment
 );
 
+//
+// RESOURCES
+//
+router.get("/resources/:id", ensureAuthenticated, apiController.getResource);
+
 router.use("/admin", ensureAdmin); // ensure user is admin in admin routes
 module.exports = router;

@@ -26,6 +26,8 @@ block content
             span.tag Proprietário
           else
             span.tag Público
-          a.button(href=`/resource/${r._id}`) Ver
+          a.button(href="#", data-id=r._id) Ver
   else
     p Não há recursos para mostrar.
+
+  include partials/resourceModal.pug

@@ -1,0 +1,16 @@
+//- Modal for resource preview
+div#resourceModal.modal
+  .modal-content
+    .modal-left
+      div#previewArea
+    .modal-right
+      h3 Comentários
+      ul#commentsList
+      form#commentForm(data-resource-id="")
+        textarea(name="content" placeholder="Escreve um comentário...")
+        button(type="submit") Enviar
+      .share-buttons
+        h4 Partilhar em:
+        a.share(href="#" id="shareFacebook") Facebook
+        a.share(href="#" id="shareTwitter") Twitter
+    button.modal-close(type="button") ×
