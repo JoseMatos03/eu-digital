@@ -7,11 +7,11 @@ block content
     each r in resources
       li
         | #{r.filename} — público? #{r.public}
-        form(data-ajax method="post", action=`/api/admin/resources/${r._id}`, style="display:inline")
+        form(data-ajax, method="post", action=`/api/admin/resources/${r._id}`, style="display:inline")
           input(type="hidden", name="_method", value="DELETE")
           button(type="submit") 🗑️
-        form(data-ajax method="post", action=`/api/admin/resources/${r._id}/export`, style="display:inline")
+        form(method="post", action=`/api/admin/resources/${r._id}/export`, style="display:inline")
           button(type="submit") 📦 Exportar
-        form(data-ajax method="post", action=`/api/admin/resources/${r._id}/public`, style="display:inline")
+        form(data-ajax, method="post", action=`/api/admin/resources/${r._id}/public`, style="display:inline")
           input(type="hidden", name="_method", value="PATCH")
           button(type="submit") Tornar #{r.public ? 'Privado' : 'Público'}

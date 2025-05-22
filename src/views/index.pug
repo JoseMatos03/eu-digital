@@ -27,7 +27,15 @@ block content
           else
             span.tag Público
           a.button(href="#", data-id=r._id) Ver
+          form(method="post", action=`/api/admin/resources/${r._id}/export`, style="display:inline")
+            button(type="submit") 📦 Exportar
   else
     p Não há recursos para mostrar.
+
+  form(method="post", action="/api/admin/resources", enctype="multipart/form-data", data-ajax)
+    div
+      label Escolher ficheiro ZIP
+      input(type="file", name="sip")
+    button(type="submit") Upload
 
   include partials/resourceModal.pug
