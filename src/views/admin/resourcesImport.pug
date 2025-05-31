@@ -1,9 +1,11 @@
 extends ../layouts/layout
 
 block content
+  .container
+  .container
   h2 Importar SIP
-  form(method="post", action="/api/admin/resources", enctype="multipart/form-data", data-ajax, data-redirect="/admin/resources")
+  form.form.form(method="post", action="/api/admin/resources", enctype="mul.resource-li.resource-item.cardsttipart/form-data", data-ajax, data-redirect="/admin/resources")
     div
       label Escolher ficheiro ZIP
-      input(type="file", name="sip")
-    button(type="submit") Upload
+      input.form-control(type="file", name="sip")
+    button.btn(type="submit") Upload

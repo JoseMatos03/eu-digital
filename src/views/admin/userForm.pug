@@ -1,20 +1,22 @@
 extends ../layouts/layout
 
 block content
+  .container
+  .container
   h2= title
-  form(method="post", action="/api/admin/users", data-ajax, data-redirect="/admin/users")
+  form.form.form(method="post", action="/api/admin/users", data-ajax, data-redirect="/admin/users")
     div
       label Username
-      input(type="text", name="username", value=user.username || '')
+      input.form-control(type="text", name="username", value=user.username || '')
     div
       label Email
-      input(type="email", name="email", value=user.email || '')
+      input.form-control(type="email", name="email", value=user.email || '')
     div
       label Password
-      input(type="password", name="password")
+      input.form-control(type="password", name="password")
     div
       label Role
-      select(name="role")
+      select.form-select.form-select(name="role")
         option(value="user", selected=user.role=='user') user
         option(value="admin", selected=user.role=='admin') admin
-    button(type="submit") Guardar
+    button.btn(type="submit") Guardar

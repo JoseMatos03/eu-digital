@@ -1,17 +1,19 @@
 extends ../layouts/layout
 
 block content
+  .container
+  .container
   h2= title
-  a(href="/admin/news/create") ➕ Criar nova notícia
+  a.nav-link(href="/admin/news/create") ➕ Criar nova notícia
   each n in news
     article
       h3= n.title
       p= n.content
       p Visível? #{n.visible}
-      a(href=`/admin/news/${n._id}`) ✏️ Editar
-      form(data-ajax method="post", action=`/api/admin/news/${n._id}`, style="display:inline")
-        input(type="hidden", name="_method", value="DELETE")
-        button(type="submit") 🗑️ Eliminar
-      form(data-ajax method="post", action=`/api/admin/news/${n._id}/visibility`, style="display:inline")
-        input(type="hidden", name="_method", value="PATCH")
-        button(type="submit") 🔄 Visibilidade
+      a.nav-link(href=`/admin/news/${n._id}`) ✏️ Editar
+      form.form.form(data-ajax method="post", action=`/api/admin/news/${n._id}`, style="display:inli.resource-item.cardne")
+        input.form-control(type="hidden", name="_method", value="DELETE")
+        button.btn(type="submit") 🗑️ Eli.resource-item.cardminar
+      form.form.form(data-ajax method="post", action=`/api/admin/news/${n._id}/visibili.resource-item.cardty`, style="display:inli.resource-item.cardne")
+        input.form-control(type="hidden", name="_method", value="PATCH")
+        button.btn(type="submit") 🔄 Visibili.resource-item.carddade

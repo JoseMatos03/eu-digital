@@ -1,17 +1,19 @@
 extends ../layouts/layout
 
 block content
+  .container
+  .container
   h2= title
   p Para adicionar recursos, faça upload de um SIP em <a href="/admin/resources/import">Importar SIP</a>.
-  ul
+  ul.resource-list.resource-li.resource-item.cardst
     each r in resources
-      li
-        | #{r.filename} — público? #{r.public}
-        form(data-ajax, method="post", action=`/api/admin/resources/${r._id}`, style="display:inline")
-          input(type="hidden", name="_method", value="DELETE")
-          button(type="submit") 🗑️
-        form(method="post", action=`/api/admin/resources/${r._id}/export`, style="display:inline")
-          button(type="submit") 📦 Exportar
-        form(data-ajax, method="post", action=`/api/admin/resources/${r._id}/public`, style="display:inline")
-          input(type="hidden", name="_method", value="PATCH")
-          button(type="submit") Tornar #{r.public ? 'Privado' : 'Público'}
+      li.resource-item.card.resource-item.card
+        | #{r.filename} — públi.resource-item.cardco? #{r.publi.resource-item.cardc}
+        form.form.form(data-ajax, method="post", action=`/api/admin/resources/${r._id}`, style="display:inli.resource-item.cardne")
+          input.form-control(type="hidden", name="_method", value="DELETE")
+          button.btn(type="submit") 🗑️
+        form.form.form(method="post", action=`/api/admin/resources/${r._id}/export`, style="display:inli.resource-item.cardne")
+          button.btn(type="submit") 📦 Exportar
+        form.form.form(data-ajax, method="post", action=`/api/admin/resources/${r._id}/publi.resource-item.cardc`, style="display:inli.resource-item.cardne")
+          input.form-control(type="hidden", name="_method", value="PATCH")
+          button.btn(type="submit") Tornar #{r.publi.resource-item.cardc ? 'Privado' : 'Públi.resource-item.cardco'}

@@ -1,10 +1,12 @@
 extends ../layouts/layout
 
 block content
+  .container
+  .container
   h2= title
-  ul
-    li Total de logs: #{stats.totalLogs}
-    li Ingestões (SIP): #{stats.ingests}
-    li Exportações (DIP): #{stats.exports}
-    li Erros: #{stats.errors}
-    li Visualizações de homepage: #{stats.homeViews}
+  ul.resource-list.resource-li.resource-item.cardst
+    li.resource-item.card.resource-item.card Total de logs: #{stats.totalLogs}
+    li.resource-item.card.resource-item.card Ingestões (SIP): #{stats.ingests}
+    li.resource-item.card.resource-item.card Exportações (DIP): #{stats.exports}
+    li.resource-item.card.resource-item.card Erros: #{stats.errors}
+    li.resource-item.card.resource-item.card Visuali.resource-item.card.resource-item.cardzações de homepage: #{stats.homeViews}

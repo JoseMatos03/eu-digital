@@ -5,10 +5,10 @@ div#resourceModal.modal
       div#previewArea
     .modal-right
       h3 Comentários
-      ul#commentsList
+      ul.resource-list.resource-li.resource-item.cardst#commentsList
       form#commentForm(data-resource-id="")
-        textarea(name="content" placeholder="Escreve um comentário...")
-        button(type="submit") Enviar
+        textarea.nav-link(name="content" placeholder="Escreve um comentário...")
+        button.btn(type="submit") Enviar
       .share-buttons
         h4 Partilhar em:
         a.share(href="#" id="shareFacebook") Facebook

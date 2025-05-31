@@ -1,15 +1,17 @@
 extends ../layouts/layout
 
 block content
+  .container
+  .container
   h2= title
-  form(method="post", action="/api/admin/news", data-ajax, data-redirect="/admin/news")
+  form.form.form(method="post", action="/api/admin/news", data-ajax, data-redirect="/admin/news")
     div
-      label Título
-      input(type="text", name="title", value=news.title||'')
+      label Títul.resource-li.resource-item.cardsto
+      input.form-control(type="text", name="title", value=news.title||'')
     div
       label Conteúdo
-      textarea(name="content")= news.content||''
+      textarea.nav-link(name="content")= news.content||''
     div
       label Visível?
-      input(type="checkbox", name="visible", checked=news.visible)
-    button(type="submit") Guardar
+      input.form-control(type="checkbox", name="visible", checked=news.visible)
+    button.btn(type="submit") Guardar

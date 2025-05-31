@@ -7,13 +7,16 @@ html
     link(rel="stylesheet", href="/css/styles.css")
     link(rel="stylesheet", href="/css/modal.css")
   body
-    header
-      nav
+    header.navbar
+      .container
         h1 Eu Digital
-    main
+
+    main.container
       block content
-    footer
-      p © 2025 Eu Digital Project
+
+    footer.footer
+      .container
+        p © 2025 Eu Digital Project
 
     script.
       function showToast(msg, isError = false) {
@@ -43,10 +46,8 @@ html
         let fetchOptions = { method, headers: { 'Accept': 'application/json' } };
 
         if (form.enctype === 'multipart/form-data') {
-          // file upload form — keep FormData so Multer works
           fetchOptions.body = new FormData(form);
         } else {
-          // normal form — URL-encode
           const params = new URLSearchParams();
           for (const [k,v] of new FormData(form).entries()) {
             params.append(k, v);
