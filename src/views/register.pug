@@ -1,15 +1,18 @@
 extends layouts/layout
 
 block content
+  .container
+  .container
   h2 Registar
-  form(action="/register", method="post")
-    div
-      label Username
-      input(type="text", name="username")
-    div
-      label Email
-      input(type="email", name="email")
-    div
-      label Password
-      input(type="password", name="password")
-    button(type="submit") Registar
+  form.form.register-form(method="post", action="/register")
+    .form-group
+      label(for="username") Username
+      input.form-control(type="text", id="username", name="username", required)
+    .form-group
+      label(for="email") Email
+      input.form-control(type="email", id="email", name="email", required)
+    .form-group
+      label(for="password") Password
+      input.form-control(type="password", id="password", name="password", required)
+    .form-group
+      button.btn(type="submit") Registar

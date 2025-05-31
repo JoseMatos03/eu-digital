@@ -1,10 +1,12 @@
 extends ../layouts/layout
 
 block content
+  .container
+  .container
   h2= title
-  form(method="post", action=`http://localhost:3001/api/admin/users/${user._id}`, enctype="application/x-www-form-urlencoded", data-ajax, data-redirect="/admin/users")
+  form.form.form(method="post", action=`http://localhost:3001/api/admin/users/${user._id}`, enctype="application/x-www-form-urlencoded", data-ajax, data-redirect="/admin/users")
     // override to PUT
-    input(type="hidden", name="_method", value="PUT")
+    input.form-control(type="hidden", name="_method", value="PUT")
 
     div
       label(for="username") Username
@@ -25,5 +27,5 @@ block content
       input#password(type="password", name="password", placeholder="Deixe vazio para manter")
 
     div.button-group
-      button(type="submit") 💾 Guardar Alterações
-      a.button(href="/admin/users") Cancelar
+      button.btn(type="submit") 💾 Guardar Alterações
+      a.button.btn(href="/admin/users") Cancelar

@@ -1,7 +1,7 @@
 extends layouts/layout
 
 block content
-  header
+  .container
     if user
       p Olá, #{user.username}!
       a.button(href="/logout") Logout
@@ -10,55 +10,44 @@ block content
       a.button(href="/login") Login
 
   hr
+  form.form(method="get", action="/")
+  .filters-grid
+    .search-bar
+      input.form-control(type="text", name="search", placeholder="Procurar recurso...", value=filters.search)
 
-  if user
-    section.upload_section
-      h3 “Inserir Novo Conteúdo (formato SIP)”
-      form(
-        method="post"
-        action="http://localhost:3001/api/admin/resources"
-        enctype="multipart/form-data"
-        data-ajax
-        data-redirect="/"
-      )
-        div
-          label(for="sip") Escolher ficheiro ZIP:
-          input#sip(type="file", name="sip", required)
-        button(type="submit") Upload SIP
-      hr
-
-  form(method="get", action="/")
-    .filters
-      input(
-        type="text"
-        name="search"
-        placeholder="Procurar título..."
-        value=filters.search
-      )
-      select(name="tag")
+    .category-date
+      select.form-select(name="tag")
         option(value="") Todas as categorias
         each t in tagOptions
-          option(
-            value=t
-            selected=(filters.tag && filters.tag===t)
-          )= t
-      input(type="date" name="dateFrom" value=filters.dateFrom)
-      input(type="date" name="dateTo"   value=filters.dateTo)
-      button(type="submit") Filtrar
+          option(value=t selected=(filters.tag===t))= t
+      input.form-control(type="date", name="dateFrom", value=filters.dateFrom)
+      input.form-control(type="date", name="dateTo", value=filters.dateTo)
+    .filter-btn
+      button.btn(type="submit") Filtrar
 
-  if resources.length
-    ul.resource-list
-      each r in resources
-        li.resource-item
-          h3= r.metadata.titulo
-          p Tipo: #{r.metadata.tipo} | Categorias: #{r.metadata.tags.join(', ')}
-          p Data: #{new Date(r.metadata.dataCriacao).toLocaleDateString()}
-          if user && r.metadata.publicador === user.username
-            span.tag Proprietário
-          else
-            span.tag Público
-          a.button(href="#", data-id=r._id) Ver
-  else
-    p Não há recursos para mostrar.
+    if resources.length
+      ul.resource-list
+        each r in resources
+          li.resource-item.card
+            h3= r.metadata.titulo
+            p Tipo: #{r.metadata.tipo} | Categorias: #{r.metadata.tags.join(', ')}
+            p Data: #{new Date(r.metadata.dataCriacao).toLocaleDateString()}
+            if user && r.metadata.publicador === user.username
+              span.tag Proprietário
+            else
+              span.tag Público
+            a.button.btn(href="#", data-id=r._id) Ver
+            form(method="post", action=`http://localhost:3001/api/admin/resources/${r._id}/export`, style="display:inline")
+              button.btn(type="submit") 📦 Exportar
+    else
+      p Não há recursos para mostrar.
 
-  include partials/resourceModal.pug
+    if user
+      form.form.upload-form(method="post", action="http://localhost:3001/api/admin/resources", enctype="multipart/form-data", data-ajax)
+        .form-group
+          label(for="sip") Escolher ficheiro ZIP
+          input.form-control(type="file", id="sip", name="sip")
+        .form-group
+          button.btn(type="submit") Upload
+
+    include partials/resourceModal.pug
