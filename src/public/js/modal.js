@@ -14,7 +14,9 @@ document.addEventListener("DOMContentLoaded", () => {
       const id = btn.dataset.id;
       commentForm.dataset.resourceId = id;
       // Load resource metadata
-      const res = await fetch(`/api/resources/${id}`);
+      const res = await fetch(`${window.API_BASE}/api/resources/${id}`, {
+        credentials: "include",
+      });
       const resource = await res.json();
       // Render preview
       preview.innerHTML = renderPreview(resource);
@@ -55,7 +57,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
   async function loadComments(id) {
     commentsList.innerHTML = "";
-    const res = await fetch(`/api/resources/${id}/comments`);
+    const res = await fetch(
+      `${window.API_BASE}/api/resources/${id}/comments}`,
+      {
+        credentials: "include",
+      }
+    );
     const comments = await res.json();
     comments.forEach((c) => {
       const li = document.createElement("li");
@@ -68,8 +75,9 @@ document.addEventListener("DOMContentLoaded", () => {
     e.preventDefault();
     const id = commentForm.dataset.resourceId;
     const data = { content: commentForm.content.value };
-    const res = await fetch(`/api/resources/${id}/comments`, {
+    await fetch(`${window.API_BASE}/api/resources/${id}/comments`, {
       method: "POST",
+      credentials: "include",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
     });

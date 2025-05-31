@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   mongo:
     image: mongo:latest
@@ -9,7 +11,24 @@ services:
 
   backoffice:
     build: ./src
-    command: ["npm", "run", "dev"]
+    command: ["node", "backoffice.js"]
+    ports:
+      - "3001:3001"
+    depends_on:
+      - mongo
+    volumes:
+      - ./src:/app
+      - ./src/uploads:/app/uploads
+      - ./src/logs:/app/logs
+      - ./src/tmp_sips:/app/tmp_sips
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/eu-digital
+      - API_PORT=3001
+      - FRONT_URL=http://localhost:3000
+
+  frontoffice:
+    build: ./src
+    command: ["node", "frontoffice.js"]
     ports:
       - "3000:3000"
     depends_on:
@@ -21,6 +40,8 @@ services:
       - ./src/tmp_sips:/app/tmp_sips
     environment:
       - MONGO_URI=mongodb://mongo:27017/eu-digital
+      - SESSION_SECRET=uma_chavesecreta
+      - FRONT_PORT=3000
 
 volumes:
   mongo-data:
