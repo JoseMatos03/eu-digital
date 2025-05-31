@@ -1,2 +1,0 @@
-1. Melhorar filtros
-2. Melhorar parte "cronológica" da disposição de elementos na página.

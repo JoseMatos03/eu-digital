@@ -43,7 +43,7 @@ exports.renderHome = async (req, res, next) => {
       .sort({ "metadata.dataCriacao": -1 })
       .lean();
 
-    // Build a flat list of all possible tags (for the dropdown)
+    taxonomy.rebuildHierarchyFromResources(resources);
     const tagOptions = taxonomy.getFlatTags();
 
     // Render the index.pug, passing `user` (which may be null) and our data
