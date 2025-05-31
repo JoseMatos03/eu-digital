@@ -64,18 +64,14 @@ router.post(
 //
 // RESOURCES
 //
-router.get("/resources/:id", ensureAuthenticated, apiController.getResource);
+router.get("/resources/:id", apiController.getResource);
 router.post(
   "/resources",
   ensureAuthenticated,
   upload.single("sip"),
   apiController.createResource
 );
-router.post(
-  "/resources/:id/export",
-  ensureAuthenticated,
-  apiController.exportResource
-);
+router.post("/resources/:id/export", apiController.exportResource);
 
 router.use("/admin", ensureAdmin); // ensure user is admin in admin routes
 module.exports = router;
