@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const id = btn.dataset.id;
       commentForm.dataset.resourceId = id;
       // Load resource metadata
-      const res = await fetch(`${window.API_BASE}/api/resources/${id}`, {
+      const res = await fetch(`http://localhost:3001/api/resources/${id}`, {
         credentials: "include",
       });
       const resource = await res.json();
@@ -58,7 +58,7 @@ document.addEventListener("DOMContentLoaded", () => {
   async function loadComments(id) {
     commentsList.innerHTML = "";
     const res = await fetch(
-      `${window.API_BASE}/api/resources/${id}/comments}`,
+      `http://localhost:3001/api/resources/${id}/comments}`,
       {
         credentials: "include",
       }
@@ -75,7 +75,7 @@ document.addEventListener("DOMContentLoaded", () => {
     e.preventDefault();
     const id = commentForm.dataset.resourceId;
     const data = { content: commentForm.content.value };
-    await fetch(`${window.API_BASE}/api/resources/${id}/comments`, {
+    await fetch(`http://localhost:3001/api/resources/${id}/comments`, {
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json" },

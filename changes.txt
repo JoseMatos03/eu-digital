@@ -1,5 +1,2 @@
-1. Fazer landing page com todos os itens publicos, mesmo sem login;
-   Quando login é feito aparece os privados desse utilizador, junto com os publicos
-2. Melhorar filtros
-3. Melhorar parte "cronológica" da disposição de elementos na página.
-4. DIVIDIR EM SERVIÇOS
+1. Melhorar filtros
+2. Melhorar parte "cronológica" da disposição de elementos na página.

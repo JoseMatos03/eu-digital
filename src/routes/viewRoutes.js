@@ -5,7 +5,7 @@ const { ensureAdmin, ensureAuthenticated } = require("../utils/auth");
 const viewController = require("../controllers/viewController");
 
 // Normal routes
-router.get("/", ensureAuthenticated, viewController.renderHome);
+router.get("/", viewController.renderHome);
 
 // Admin routes
 router.get("/admin", ensureAdmin, viewController.renderAdmin);
