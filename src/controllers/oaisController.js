@@ -3,6 +3,7 @@ const unzipper = require("unzipper");
 const fs = require("fs-extra");
 const path = require("path");
 
+const taxonomy = require("../utils/taxonomy");
 const logger = require("../utils/logger");
 const { bailIf, ensureDir, computeChecksum } = require("../utils/helpers");
 
@@ -88,6 +89,7 @@ exports.handleIngest = async (req, res, next) => {
     });
     resourcesCreated.push(resourceDoc);
 
+    taxonomy.registerResourceTags(resourceDoc);
     logger.info(`Recurso criado: ${item.filename} (tipo: ${tipoCat})`);
   }
 

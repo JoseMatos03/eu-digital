@@ -7,38 +7,49 @@ const taxonomy = require("../utils/taxonomy");
 exports.renderHome = async (req, res, next) => {
   try {
     const { tag, dateFrom, dateTo, search } = req.query;
-    const userName = req.user.username;
+    const user = req.user || null; // will be null if not logged in
 
-    // Only public OR owned by this user
-    const filter = {
-      $or: [{ public: true }, { "metadata.publicador": userName }],
-    };
+    // Build base filter:
+    // - If user is logged in, show public OR owned by them
+    // - If no user, only show public
+    let filter;
+    if (user && user.username) {
+      filter = {
+        $or: [{ public: true }, { "metadata.publicador": user.username }],
+      };
+    } else {
+      filter = { public: true };
+    }
 
-    // apply taxonomy‐tag filter
+    // Apply taxonomy‐tag filter
     if (tag) {
       filter["metadata.tags"] = tag;
     }
-    // date range
+
+    // Apply date range filter
     if (dateFrom || dateTo) {
       filter["metadata.dataCriacao"] = {};
       if (dateFrom) filter["metadata.dataCriacao"].$gte = new Date(dateFrom);
       if (dateTo) filter["metadata.dataCriacao"].$lte = new Date(dateTo);
     }
-    // title search
+
+    // Apply title / search filter
     if (search) {
       filter["metadata.titulo"] = { $regex: search, $options: "i" };
     }
 
-    // fetch + sort
+    // Fetch from MongoDB, sorted most‐recent first
     const resources = await Resource.find(filter)
       .sort({ "metadata.dataCriacao": -1 })
       .lean();
 
+    taxonomy.rebuildHierarchyFromResources(resources);
     const tagOptions = taxonomy.getFlatTags();
 
+    // Render the index.pug, passing `user` (which may be null) and our data
     res.render("index", {
       title: "Eu Digital – Diário",
-      user: req.user,
+      user, // either the logged‐in user object, or null
       resources,
       tagOptions,
       filters: { tag, dateFrom, dateTo, search },

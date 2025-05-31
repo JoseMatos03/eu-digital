@@ -2,10 +2,32 @@ extends layouts/layout
 
 block content
   .container
-    h2= title
-    p Olá #{user.username}!
+    if user
+      p Olá, #{user.username}!
+      a.button(href="/logout") Logout
+    else
+      p Bem‐vindo, visitante!
+      a.button(href="/login") Login
 
-    form.form(method="get", action="/")
+  hr
+
+  if user
+    section.upload_section
+      h3 “Inserir Novo Conteúdo (formato SIP)”
+      form(
+        method="post"
+        action="http://localhost:3001/api/admin/resources"
+        enctype="multipart/form-data"
+        data-ajax
+        data-redirect="/"
+      )
+        div
+          label(for="sip") Escolher ficheiro ZIP:
+          input#sip(type="file", name="sip", required)
+        button(type="submit") Upload SIP
+      hr
+
+      form.form(method="get", action="/")
       .filters-grid
         .search-bar
           input.form-control(type="text", name="search", placeholder="Procurar recurso...", value=filters.search)
@@ -27,7 +49,7 @@ block content
             h3= r.metadata.titulo
             p Tipo: #{r.metadata.tipo} | Categorias: #{r.metadata.tags.join(', ')}
             p Data: #{new Date(r.metadata.dataCriacao).toLocaleDateString()}
-            if r.metadata.publicador === user.username
+            if user && r.metadata.publicador === user.username
               span.tag Proprietário
             else
               span.tag Público

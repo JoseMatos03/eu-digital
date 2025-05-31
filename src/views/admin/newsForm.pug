@@ -4,7 +4,7 @@ block content
   .container
   .container
   h2= title
-  form.form.form(method="post", action="/api/admin/news", data-ajax, data-redirect="/admin/news")
+  form.form.form(method="post", action="http://localhost:3001/api/admin/news", data-ajax, data-redirect="/admin/news")
     div
       label Títul.resource-li.resource-item.cardsto
       input.form-control(type="text", name="title", value=news.title||'')

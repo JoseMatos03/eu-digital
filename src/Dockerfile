@@ -12,7 +12,7 @@ RUN mkdir -p tmp_sips uploads logs
 COPY . .
 
 # Expor a porta da aplicação
-EXPOSE 3000
+EXPOSE 3000 3001
 
 # Iniciar a aplicação
-CMD ["npm", "run", "dev"]
+CMD ["node", "frontoffice.js"]

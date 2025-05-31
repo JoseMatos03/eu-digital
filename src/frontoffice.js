@@ -4,17 +4,15 @@ const session = require("express-session");
 const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
 const bcrypt = require("bcryptjs");
-const mongoose = require("mongoose");
 const path = require("path");
+const mongoose = require("mongoose");
+const methodOverride = require("method-override");
 
 const logger = require("./utils/logger");
 const User = require("./models/User");
 
-const apiRoutes = require("./routes/apiRoutes");
 const viewRoutes = require("./routes/viewRoutes");
 const authRoutes = require("./routes/authRoutes");
-
-const app = express();
 
 // THIS IS JUST A HELPER FUNCTION FOR DEVELOPMENT
 // WILL BE REMOVED IN FINAL IMPLEMENTATION
@@ -68,43 +66,48 @@ async function seedTestUser() {
   console.log(`Seeded test user user: ${admin.username}`);
 }
 
-// MongoDB connection
+// Connect to the same MongoDB
 mongoose
-  .connect(process.env.MONGO_URI || "mongodb://mongo:27017/eu-digital")
+  .connect(process.env.MONGO_URI || "mongodb://mongo:27017/eu-digital", {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
   .then(async () => {
     await seedAdmin();
     await seedTestUser();
-    logger.info("Connectado ao MongoDB");
+    logger.info("FRONT -> Connectado ao MongoDB");
   })
-  .catch((err) => logger.error("Erro de conexão do MongoDB:", err));
+  .catch((err) => {
+    console.error("Front → MongoDB connection error:", err);
+    process.exit(1);
+  });
 
-// Config
+const app = express();
+
+// Pug for templates
 app.set("view engine", "pug");
 app.set("views", path.join(__dirname, "views"));
+
+// Serve static assets (CSS/JS for modal, etc.)
 app.use(express.static(path.join(__dirname, "public")));
-app.use("/uploads", express.static(path.join(__dirname, "uploads"))); // upload middleware
+// Serve uploaded files (images, PDFs, etc.)
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
+// Body parsers
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Middleware to override POST method with DELETE
-app.use((req, res, next) => {
-  if (req.body && req.body._method) {
-    req.method = req.body._method.toUpperCase();
-    delete req.body._method;
-  }
-  next();
-});
+// Method‐override (to support PUT/DELETE via forms)
+app.use(methodOverride("_method"));
 
-// Session middleware
+// Sessions & Passport (same as before)
 app.use(
   session({
-    secret: process.env.SESSION_SECRET || "chavesecreta",
+    secret: process.env.SESSION_SECRET || "uma_chavesecreta",
     resave: false,
     saveUninitialized: false,
   })
 );
-
-// Passport initialization
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -137,19 +140,16 @@ passport.deserializeUser(async (id, done) => {
   }
 });
 
-// Routes
-app.use("/api", apiRoutes);
-app.use("/", viewRoutes);
+// Mount view & auth routes
 app.use("/", authRoutes);
+app.use("/", viewRoutes);
 
-app.use((req, res, next) => {
-  logger.info(`${req.method} ${req.originalUrl} from ${req.ip}`);
-  next();
-});
-
+// Error handler (render a simple error page or redirect)
 app.use((err, req, res, next) => {
-  logger.error(`Erro inesperado em ${req.method} ${req.url}: ${err.message}`);
-  res.status(400).json({ error: err.message });
+  console.error("Front Error:", err);
+  res.status(400).render("error", { message: err.message });
 });
 
-module.exports = app;
+// Start listening on port 3000
+const PORT = process.env.FRONT_PORT || 3000;
+app.listen(PORT, () => console.log(`Front service listening on port ${PORT}`));
