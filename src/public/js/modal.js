@@ -62,40 +62,37 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Image
     if (["jpg", "jpeg", "png", "gif"].includes(ext)) {
-      preview.innerHTML = `<img src="${fileUrl}" alt="${r.metadata.titulo}" style="max-width:100%;height:auto;">`;
+      preview.innerHTML = `<div class="preview-center"><img src="${fileUrl}" alt="${r.metadata.titulo}" style="max-width:100%; max-height:65vh; border-radius:8px;"></div>`;
       return;
     }
     // Video
     if (["mp4", "webm"].includes(ext)) {
-      preview.innerHTML = `<video controls src="${fileUrl}" style="max-width:100%;"></video>`;
+      preview.innerHTML = `<div class="preview-center"><video controls src="${fileUrl}" style="max-width:100%; max-height:75vh; border-radius:8px; background:#222;"></video></div>`;
       return;
     }
     // Audio
     if (["mp3", "wav"].includes(ext)) {
-      preview.innerHTML = `<audio controls src="${fileUrl}"></audio>`;
+      preview.innerHTML = `<div class="preview-center"><audio controls src="${fileUrl}" style="width:70%; max-width:400px; min-width:220px;"></audio></div>`;
       return;
     }
     // PDF
     if (ext === "pdf") {
-      preview.innerHTML = `<iframe src="${fileUrl}" style="width:100%; height:100%;"></iframe>`;
+      preview.innerHTML = `<div class="preview-center"><iframe src="${fileUrl}" allow="fullscreen" style="width:100%; height:70vh; min-height:350px; border-radius:8px; background:#f9f9f9;"></iframe></div>`;
       return;
     }
     // Text‐based files: json, txt, csv, md
     if (["json", "txt", "csv", "md"].includes(ext)) {
       try {
         const textRes = await fetch(fileUrl);
-        if (!textRes.ok) {
+        if (!textRes.ok)
           throw new Error(`Erro ao baixar texto (${textRes.status})`);
-        }
         const text = await textRes.text();
-        // Escape HTML so raw text shows safely
         const escaped = text
           .replace(/&/g, "&amp;")
           .replace(/</g, "&lt;")
           .replace(/>/g, "&gt;");
-        preview.innerHTML = `<pre style="white-space: pre-wrap; word-break: break-word;">${escaped}</pre>`;
+        preview.innerHTML = `<pre style="white-space: pre-wrap; word-break: break-word; max-height: 60vh; overflow: auto; background: #fff; border-radius: 8px; padding: 1rem;">${escaped}</pre>`;
       } catch (err) {
-        console.error("Text preview error:", err);
         preview.innerHTML = `<p>Não foi possível exibir o texto.</p>`;
       }
       return;
