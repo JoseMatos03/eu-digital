@@ -11,23 +11,35 @@ Antes de começares, garante que tens instalado:
 ## Estrutura do Projeto
 
 ```
-eu-digital/
-├── src/                # Código da aplicação (Express, Pug, Mongoose, etc.)
-│   ├── app.js
-│   ├── controllers/
-│   ├── models/
-│   ├── routes/
-│   ├── views/
-│   ├── public/
-│   ├── uploads/        # Pasta onde ficam os ficheiros submetidos (volume Docker)
-│   ├── logs/           # Logs da aplicação (volume Docker)
-│   ├── .env            # Variáveis de ambiente (não versionado)
-│   └── Dockerfile      # Define o ambiente Docker do backoffice
-├── data/               # Volume de dados para MongoDB
-├── docker-compose.yml  # Orquestra os serviços
-├── DEVELOPERS.md
-├── SPECIFICATIONS.md   # Define especificações sobre o projeto
-└── README.md
+Projeto_Compilador/
+├── data/                    # Volume de dados para MongoDB
+├── src/                     # Código da aplicação (Express, Pug, Mongoose, etc.)
+│   ├── __tests__/           # Testes unitários/integrados
+│   ├── controllers/         # Lógica dos controladores
+│   ├── logs/                # Logs da aplicação (volume Docker)
+│   ├── models/              # Modelos Mongoose
+│   ├── node_modules/        # Dependências (gerado pelo npm)
+│   ├── public/              # Arquivos estáticos (CSS, JS, imagens)
+│   ├── routes/              # Definição de rotas Express
+│   ├── tmp_sips/            # Pasta temporária (ex.: processamento de ficheiros SIP)
+│   ├── uploads/             # Ficheiros submetidos pelos utilizadores (volume Docker)
+│   ├── utils/               # Funções utilitárias (helpers, middlewares, etc.)
+│   ├── views/               # Views Pug (templates)
+│   └── .dockerignore        # Arquivos/pastas ignorados pelo Docker Build
+│   └── .env                 # Variáveis de ambiente (não versionado)
+│   └── .env.test            # Variáveis de ambiente para testes (não versionado)
+│   └── backoffice.js        # Script de inicialização do backoffice
+│   └── frontoffice.js       # Script de inicialização do frontoffice
+│   └── Dockerfile           # Define o ambiente Docker
+│   └── package-lock.json    # Lockfile gerado pelo npm
+│   └── package.json         # Declarativo de dependências e scripts npm
+├── .gitignore               # Arquivos/pastas ignorados pelo Git
+├── DEVELOPERS.md            # Instruções para desenvolvedores
+├── LICENSE                  # Licença do projeto
+├── projeto_EW2025.pdf       # Enunciado do projeto
+├── README.md                # Visão geral do projeto
+├── SPECIFICATIONS.md        # Definições e especificações detalhadas do projeto
+└── docker-compose.yml       # Orquestra os serviços (MongoDB, backoffice, frontoffice)
 ```
 
 ## Instalar e correr o projeto com Docker
@@ -35,8 +47,8 @@ eu-digital/
 ### 1. Clonar o repositório
 
 ```bash
-git clone https://github.com/JoseMatos03/eu-digital.git
-cd eu-digital
+git clone <link-do-repositório>
+cd <nome-do-repositorio>
 ```
 
 ### 2. Criar ficheiro `.env`
@@ -46,6 +58,10 @@ Dentro da pasta `src/`, cria um ficheiro `.env` com o seguinte conteúdo:
 ```
 MONGO_URI=mongodb://mongo:27017/eu-digital
 PORT=3000
+
+ADMIN_USER=admin
+ADMIN_EMAIL=admin@root.com
+ADMIN_PASS=admin
 ```
 
 ### 3. Lançar a aplicação
