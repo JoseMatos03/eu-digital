@@ -3,15 +3,19 @@ extends layouts/layout
 block content
   .container
     if user
-      p Olá, #{user.username}!
-      if user.role === 'admin'
-        a.button(href="/admin") Admin Dashboard
-      a.button(href="/logout") Logout
+      .div-user-header(style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.8rem;")
+        span Olá, #{user.username}!
+        if user.role === 'admin'
+          a.button.btn(href="/admin") Admin Page
+        a.button.btn(href="/news") Notícias
+        a.button.btn(href="/logout") Logout
     else
-      p Bem‐vindo, visitante!
-      a.button(href="/login") Login
-      a.button(href="/register") Registar
-  a.button(href="/news") Ver notícias
+      .div-user-header(style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.8rem;")
+        span Bem‐vindo, visitante!
+        a.button.btn(href="/news") Notícias
+        a.button.btn(href="/login") Login
+        a.button.btn(href="/register") Registar
+
   hr
   form.form(method="get", action="/")
     .filters-grid
@@ -39,6 +43,7 @@ block content
       each r in resources
         li.resource-item.card
           h3= r.metadata.titulo
+          span.tag(class=`tag-${r.metadata.tipo ? r.metadata.tipo.toLowerCase() : 'default'}`)= r.metadata.tipo
           p Tipo: #{r.metadata.tipo} | Categorias: #{r.metadata.tags.join(', ')}
           p Data: #{new Date(r.metadata.dataCriacao).toLocaleDateString()}
           if user && r.metadata.publicador === user.username
