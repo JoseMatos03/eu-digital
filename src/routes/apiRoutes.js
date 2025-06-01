@@ -73,5 +73,8 @@ router.get("/users/:username", apiController.getUser);
 router.get("/users/id/:id", apiController.getUserByIdentifier);
 router.post("/users", apiController.createUser);
 
+// NEWS
+router.get("/news/visible", apiController.getVisibleNews);
+
 router.use("/admin", ensureAdmin); // ensure user is admin in admin routes
 module.exports = router;

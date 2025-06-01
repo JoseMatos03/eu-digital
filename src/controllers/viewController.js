@@ -35,6 +35,16 @@ exports.renderHome = async (req, res, next) => {
   }
 };
 
+exports.renderNews = async (req, res) => {
+  const apiBase = `http://backoffice:3001`;
+  const response = await axios.get(`${apiBase}/api/news/visible`);
+  const { news } = response.data;
+  res.render("news", {
+    title: "Eu Digital - Notícias",
+    news,
+  });
+};
+
 exports.renderAdmin = (req, res) => {
   res.render("admin", {
     title: "Admin Dashboard",

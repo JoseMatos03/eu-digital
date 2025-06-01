@@ -4,11 +4,14 @@ block content
   .container
     if user
       p Olá, #{user.username}!
+      if user.role === 'admin'
+        a.button(href="/admin") Admin Dashboard
       a.button(href="/logout") Logout
     else
       p Bem‐vindo, visitante!
       a.button(href="/login") Login
-
+      a.button(href="/register") Registar
+  a.button(href="/news") Ver notícias
   hr
   form.form(method="get", action="/")
     .filters-grid
