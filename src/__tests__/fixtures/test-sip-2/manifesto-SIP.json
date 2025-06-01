@@ -1,0 +1,31 @@
+{
+  "version": "0.97",
+  "payload": [
+    {
+      "filename": "imagem.jpg",
+      "metadata": "metadata/imagem.json",
+      "checksum": "e58ab7c5a4ee6a796dc34be3df1d58d711cde2955da4d92fd340103dd0c8ce1b"
+    },
+    {
+      "filename": "video.mp4",
+      "metadata": "metadata/video.json",
+      "checksum": "44004271bfd17a8f676206a5e8425fdf9d1de4a0bf4601a3c32c978cb9a2d9c9"
+    },
+    {
+      "filename": "texto.txt",
+      "metadata": "metadata/texto.json",
+      "checksum": "ca4974b7e8538aba9103bedef89f4426bc95f4c5a4f36d2ac2754290fa745b79"
+    },
+    {
+      "filename": "exemplo.pdf",
+      "metadata": "metadata/exemplo.json",
+      "checksum": "e83014e71fc8e772b7689a3f1c8628a2ef2852a1a38e31bddaf823615570e709"
+    },
+    {
+      "filename": "audio.mp3",
+      "metadata": "metadata/audio.json",
+      "checksum": "1d818e91400f4a1f892f1b0442d312d2b32a62e2ce26c4c6851126e434d237af"
+    }
+  ]
+}
+  
