@@ -7,84 +7,158 @@ document.addEventListener("DOMContentLoaded", () => {
   const shareTW = document.getElementById("shareTwitter");
   const closeBtn = modal.querySelector(".modal-close");
 
-  // Opens the modal
+  // 1) Attach click handler to all “Ver” buttons that have data-id
   document.querySelectorAll("a.button[data-id]").forEach((btn) => {
     btn.addEventListener("click", async (e) => {
       e.preventDefault();
+
       const id = btn.dataset.id;
       commentForm.dataset.resourceId = id;
-      // Load resource metadata
-      const res = await fetch(`http://localhost:3001/api/resources/${id}`, {
-        credentials: "include",
-      });
-      const resource = await res.json();
-      // Render preview
-      preview.innerHTML = renderPreview(resource);
-      // Load comments
-      loadComments(id);
-      // Setup share links
-      const url = `${window.location.origin}/resource/${id}`;
-      shareFB.href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
-        url
-      )}`;
-      shareTW.href = `https://twitter.com/intent/tweet?url=${encodeURIComponent(
-        url
-      )}`;
-      modal.classList.add("open");
+
+      try {
+        // 1a) Load resource metadata
+        const resResource = await fetch(
+          `http://localhost:3001/api/resources/${id}`,
+          {
+            credentials: "include",
+          }
+        );
+        if (!resResource.ok) {
+          throw new Error(`Erro ao buscar recurso (${resResource.status})`);
+        }
+        const resource = await resResource.json();
+
+        // 1b) Render preview (may be async for text)
+        await renderPreview(resource);
+
+        // 1c) Load comments
+        await loadComments(id);
+
+        // 1d) Setup share links
+        const url = `${window.location.origin}/resource/${id}`;
+        shareFB.href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
+          url
+        )}`;
+        shareTW.href = `https://twitter.com/intent/tweet?url=${encodeURIComponent(
+          url
+        )}`;
+
+        // 1e) Show modal
+        modal.classList.add("open");
+      } catch (err) {
+        console.error("Modal error:", err);
+        alert("Não foi possível carregar o recurso.");
+      }
     });
   });
 
+  // 2) Close‐button hides the modal
   closeBtn.addEventListener("click", () => modal.classList.remove("open"));
 
-  // Render preview based on file type
-  function renderPreview(r) {
+  // 3) Helper: renderPreview based on file type (handles images, video, audio, pdf, text)
+  async function renderPreview(r) {
     const ext = r.filename.split(".").pop().toLowerCase();
-    const path = `/${r.path}`;
+    const fileUrl = `/${r.path}`;
+
+    // Image
     if (["jpg", "jpeg", "png", "gif"].includes(ext)) {
-      return `<img src="${path}" alt="${r.metadata.titulo}"/>`;
+      preview.innerHTML = `<img src="${fileUrl}" alt="${r.metadata.titulo}" style="max-width:100%;height:auto;">`;
+      return;
     }
+    // Video
     if (["mp4", "webm"].includes(ext)) {
-      return `<video controls src="${path}" style="max-width:100%;"></video>`;
+      preview.innerHTML = `<video controls src="${fileUrl}" style="max-width:100%;"></video>`;
+      return;
     }
+    // Audio
     if (["mp3", "wav"].includes(ext)) {
-      return `<audio controls src="${path}"></audio>`;
+      preview.innerHTML = `<audio controls src="${fileUrl}"></audio>`;
+      return;
     }
-    if (["pdf"].includes(ext)) {
-      return `<iframe src="${path}" style="width:100%;height:100%;"></iframe>`;
+    // PDF
+    if (ext === "pdf") {
+      preview.innerHTML = `<iframe src="${fileUrl}" style="width:100%; height:100%;"></iframe>`;
+      return;
     }
-    return `<p><a href="${path}" download>${r.filename}</a></p>`;
-  }
-
-  async function loadComments(id) {
-    commentsList.innerHTML = "";
-    const res = await fetch(
-      `http://localhost:3001/api/resources/${id}/comments}`,
-      {
-        credentials: "include",
+    // Text‐based files: json, txt, csv, md
+    if (["json", "txt", "csv", "md"].includes(ext)) {
+      try {
+        const textRes = await fetch(fileUrl);
+        if (!textRes.ok) {
+          throw new Error(`Erro ao baixar texto (${textRes.status})`);
+        }
+        const text = await textRes.text();
+        // Escape HTML so raw text shows safely
+        const escaped = text
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;");
+        preview.innerHTML = `<pre style="white-space: pre-wrap; word-break: break-word;">${escaped}</pre>`;
+      } catch (err) {
+        console.error("Text preview error:", err);
+        preview.innerHTML = `<p>Não foi possível exibir o texto.</p>`;
       }
-    );
-    const comments = await res.json();
-    comments.forEach((c) => {
-      const li = document.createElement("li");
-      li.textContent = `${c.author.username}: ${c.content}`;
-      commentsList.appendChild(li);
-    });
+      return;
+    }
+    // Fallback: link to download
+    preview.innerHTML = `<p><a href="${fileUrl}" download>${r.filename}</a></p>`;
   }
 
+  // 4) Helper: fetch and display comments
+  async function loadComments(id) {
+    commentsList.innerHTML = ""; // clear previous
+
+    try {
+      // FIXED URL: removed extra `}` after comments
+      const resComments = await fetch(
+        `http://localhost:3001/api/resources/${id}/comments`,
+        {
+          credentials: "include",
+        }
+      );
+      if (!resComments.ok) {
+        throw new Error(`Erro ao buscar comentários (${resComments.status})`);
+      }
+      const comments = await resComments.json();
+      comments.forEach((c) => {
+        const li = document.createElement("li");
+        li.textContent = `${c.author.username}: ${c.content}`;
+        commentsList.appendChild(li);
+      });
+    } catch (err) {
+      console.error("Comments error:", err);
+      commentsList.innerHTML = "<li>Erro ao carregar comentários.</li>";
+    }
+  }
+
+  // 5) Submit a new comment
   commentForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     const id = commentForm.dataset.resourceId;
-    const data = { content: commentForm.content.value };
-    await fetch(`http://localhost:3001/api/resources/${id}/comments`, {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    });
-    if (res.ok) {
+    const authorId = window.currentUserId || null;
+
+    const data = {
+      content: commentForm.content.value,
+      author: authorId,
+    };
+
+    try {
+      const resPost = await fetch(
+        `http://localhost:3001/api/resources/${id}/comments`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        }
+      );
+      if (!resPost.ok) {
+        throw new Error(`Erro ao enviar comentário (${resPost.status})`);
+      }
       commentForm.content.value = "";
-      loadComments(id);
-    } else {
+      await loadComments(id);
+    } catch (err) {
+      console.error("Post comment error:", err);
       alert("Erro ao enviar comentário");
     }
   });

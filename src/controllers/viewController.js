@@ -1,55 +1,31 @@
-const Resource = require("../models/Resource");
-const User = require("../models/User");
-const News = require("../models/News");
 const statsService = require("../utils/stats");
-const taxonomy = require("../utils/taxonomy");
+const axios = require("axios");
 
 exports.renderHome = async (req, res, next) => {
   try {
     const { tag, dateFrom, dateTo, search } = req.query;
-    const user = req.user || null; // will be null if not logged in
 
-    // Build base filter:
-    // - If user is logged in, show public OR owned by them
-    // - If no user, only show public
-    let filter;
-    if (user && user.username) {
-      filter = {
-        $or: [{ public: true }, { "metadata.publicador": user.username }],
-      };
-    } else {
-      filter = { public: true };
+    const params = {};
+    if (tag) params.tag = tag;
+    if (dateFrom) params.dateFrom = dateFrom;
+    if (dateTo) params.dateTo = dateTo;
+    if (search) params.search = search;
+    const paramsCopy = { ...params };
+    if (req.user && req.user.username) {
+      paramsCopy.username = req.user.username;
     }
 
-    // Apply taxonomy‐tag filter
-    if (tag) {
-      filter["metadata.tags"] = tag;
-    }
+    const apiBase = `http://backoffice:3001`;
+    const response = await axios.get(`${apiBase}/api/resources`, {
+      params: paramsCopy,
+      headers: { Cookie: req.headers.cookie || "" },
+      withCredentials: true,
+    });
 
-    // Apply date range filter
-    if (dateFrom || dateTo) {
-      filter["metadata.dataCriacao"] = {};
-      if (dateFrom) filter["metadata.dataCriacao"].$gte = new Date(dateFrom);
-      if (dateTo) filter["metadata.dataCriacao"].$lte = new Date(dateTo);
-    }
-
-    // Apply title / search filter
-    if (search) {
-      filter["metadata.titulo"] = { $regex: search, $options: "i" };
-    }
-
-    // Fetch from MongoDB, sorted most‐recent first
-    const resources = await Resource.find(filter)
-      .sort({ "metadata.dataCriacao": -1 })
-      .lean();
-
-    taxonomy.rebuildHierarchyFromResources(resources);
-    const tagOptions = taxonomy.getFlatTags();
-
-    // Render the index.pug, passing `user` (which may be null) and our data
+    const { resources, tagOptions } = response.data;
     res.render("index", {
       title: "Eu Digital – Diário",
-      user, // either the logged‐in user object, or null
+      user: req.user,
       resources,
       tagOptions,
       filters: { tag, dateFrom, dateTo, search },
@@ -68,7 +44,12 @@ exports.renderAdmin = (req, res) => {
 
 exports.usersList = async (req, res, next) => {
   try {
-    const users = await User.find().lean();
+    const API_BASE = "http://localhost:3001";
+    const response = await axios.get(`${API_BASE}/api/admin/users`, {
+      headers: { Cookie: req.headers.cookie || "" },
+      withCredentials: true,
+    });
+    const users = response.data;
     res.render("admin/usersList", { title: "Gerir Utilizadores", users });
   } catch (err) {
     next(err);
@@ -82,7 +63,12 @@ exports.usersCreateForm = (req, res) => {
 exports.usersEditForm = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const user = await User.findById(id).lean();
+    const API_BASE = "http://localhost:3001";
+    const response = await axios.get(`${API_BASE}/api/admin/users/${id}`, {
+      headers: { Cookie: req.headers.cookie || "" },
+      withCredentials: true,
+    });
+    const user = response.data;
     if (!user) return res.status(404).send("Utilizador não encontrado");
     delete user.passwordHash; // don't pass the password into the view
     res.render("admin/userEdit", {
@@ -96,7 +82,12 @@ exports.usersEditForm = async (req, res, next) => {
 
 exports.newsList = async (req, res, next) => {
   try {
-    const news = await News.find().lean();
+    const API_BASE = "http://localhost:3001";
+    const response = await axios.get(`${API_BASE}/api/admin/news`, {
+      headers: { Cookie: req.headers.cookie || "" },
+      withCredentials: true,
+    });
+    const news = response.data;
     res.render("admin/newsList", { title: "Gerir Notícias", news });
   } catch (err) {
     next(err);
@@ -110,7 +101,12 @@ exports.newsCreateForm = (req, res) => {
 exports.newsEditForm = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const news = await News.findById(id).lean();
+    const API_BASE = "http://localhost:3001";
+    const response = await axios.get(`${API_BASE}/api/admin/news/${id}`, {
+      headers: { Cookie: req.headers.cookie || "" },
+      withCredentials: true,
+    });
+    const news = response.data;
     if (!news) return res.status(404).send("Notícia não encontrada");
     res.render("admin/newsEdit", {
       title: "Editar Notícia",
@@ -123,7 +119,12 @@ exports.newsEditForm = async (req, res, next) => {
 
 exports.resourcesList = async (req, res, next) => {
   try {
-    const resources = await Resource.find().lean();
+    const API_BASE = "http://localhost:3001";
+    const response = await axios.get(`${API_BASE}/api/admin/resources`, {
+      headers: { Cookie: req.headers.cookie || "" },
+      withCredentials: true,
+    });
+    const resources = response.data;
     res.render("admin/resourcesList", { title: "Gerir Recursos", resources });
   } catch (err) {
     next(err);

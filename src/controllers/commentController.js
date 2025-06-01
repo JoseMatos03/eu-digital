@@ -5,12 +5,12 @@ const logger = require("../utils/logger");
 
 exports.listComments = async (req, res, next) => {
   try {
-    const { id: resourceId } = req.params;
+    const { id } = req.params;
 
-    const resource = await Resource.findById(resourceId).lean();
+    const resource = await Resource.findById(id).lean();
     bailIf(!resource, "Recurso não encontrado", next);
 
-    const comments = await Comment.find({ resource: resourceId })
+    const comments = await Comment.find({ resource: id })
       .sort({ createdAt: -1 })
       .populate("author", "username") // bring in the username
       .lean();
@@ -23,9 +23,9 @@ exports.listComments = async (req, res, next) => {
 
 exports.createComment = async (req, res, next) => {
   try {
-    const { id: resourceId } = req.params;
-    const { content } = req.body;
-    const userId = req.user._id;
+    const { id } = req.params;
+    const { content, author } = req.body;
+    const userId = (req.user && req.user._id) || author || null;
 
     bailIf(
       !content || !content.trim(),
@@ -33,19 +33,22 @@ exports.createComment = async (req, res, next) => {
       next
     );
 
-    const resource = await Resource.findById(resourceId).lean();
+    if (!userId) {
+      return res.status(401).json({ error: "Não autenticado" });
+    }
+
+    const resource = await Resource.findById(id).lean();
     bailIf(!resource, "Recurso não encontrado", next);
 
     const comment = await Comment.create({
-      resource: resourceId,
+      resource: id,
       author: userId,
       content: content.trim(),
     });
 
-    logger.info(`Comentário criado por ${req.user.username} em ${resourceId}`);
+    logger.info(`Comentário criado por ${userId} em ${id}`);
 
     await comment.populate("author", "username");
-
     res.status(201).json(comment);
   } catch (err) {
     next(err);

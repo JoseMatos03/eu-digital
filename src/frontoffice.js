@@ -5,82 +5,13 @@ const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
 const bcrypt = require("bcryptjs");
 const path = require("path");
-const mongoose = require("mongoose");
 const methodOverride = require("method-override");
+const axios = require("axios");
 
 const logger = require("./utils/logger");
-const User = require("./models/User");
 
 const viewRoutes = require("./routes/viewRoutes");
 const authRoutes = require("./routes/authRoutes");
-
-// THIS IS JUST A HELPER FUNCTION FOR DEVELOPMENT
-// WILL BE REMOVED IN FINAL IMPLEMENTATION
-async function seedAdmin() {
-  const username = process.env.ADMIN_USER;
-  const email = process.env.ADMIN_EMAIL;
-  const password = process.env.ADMIN_PASS;
-  if (!username || !email || !password) {
-    console.warn("ADMIN_USER/EMAIL/PASS not set — skipping admin seed");
-    return;
-  }
-
-  const existing = await User.findOne({ role: "admin" });
-  if (existing) {
-    console.log(`Admin user already exists: ${existing.username}`);
-    return;
-  }
-
-  const passwordHash = await bcrypt.hash(password, 12);
-  const admin = await User.create({
-    username,
-    email,
-    passwordHash,
-    role: "admin",
-  });
-  console.log(`Seeded admin user: ${admin.username}`);
-}
-
-async function seedTestUser() {
-  const username = process.env.TEST_USER;
-  const email = process.env.TEST_EMAIL;
-  const password = process.env.TEST_PASS;
-  if (!username || !email || !password) {
-    console.warn("TEST_USER/EMAIL/PASS not set — skipping test user seed");
-    return;
-  }
-
-  const existing = await User.findOne({ role: "user" });
-  if (existing) {
-    console.log(`Test user already exists: ${existing.username}`);
-    return;
-  }
-
-  const passwordHash = await bcrypt.hash(password, 12);
-  const admin = await User.create({
-    username,
-    email,
-    passwordHash,
-    role: "user",
-  });
-  console.log(`Seeded test user user: ${admin.username}`);
-}
-
-// Connect to the same MongoDB
-mongoose
-  .connect(process.env.MONGO_URI || "mongodb://mongo:27017/eu-digital", {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .then(async () => {
-    await seedAdmin();
-    await seedTestUser();
-    logger.info("FRONT -> Connectado ao MongoDB");
-  })
-  .catch((err) => {
-    console.error("Front → MongoDB connection error:", err);
-    process.exit(1);
-  });
 
 const app = express();
 
@@ -115,7 +46,11 @@ app.use(passport.session());
 passport.use(
   new LocalStrategy(async (username, password, done) => {
     try {
-      const user = await User.findOne({ username });
+      const apiBase = "http://backoffice:3001";
+      const response = await axios.get(
+        `${apiBase}/api/users/${encodeURIComponent(username)}`
+      );
+      const user = response.data;
       if (!user)
         return done(null, false, { message: "Utilizador não encontrado" });
 
@@ -124,6 +59,9 @@ passport.use(
 
       return done(null, user);
     } catch (err) {
+      if (err.response && err.response.status === 404) {
+        return done(null, false, { message: "Utilizador não encontrado" });
+      }
       return done(err);
     }
   })
@@ -133,7 +71,9 @@ passport.use(
 passport.serializeUser((user, done) => done(null, user._id));
 passport.deserializeUser(async (id, done) => {
   try {
-    const user = await User.findById(id).lean();
+    const apiBase = "http://backoffice:3001";
+    const response = await axios.get(`${apiBase}/api/users/id/${id}`);
+    const user = response.data;
     done(null, user);
   } catch (err) {
     done(err);

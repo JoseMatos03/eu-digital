@@ -9,6 +9,7 @@ const Resource = require("../models/Resource");
 const News = require("../models/News");
 const User = require("../models/User");
 const statsService = require("../utils/stats");
+const taxonomy = require("../utils/taxonomy");
 
 const oaisController = require("./oaisController");
 
@@ -236,6 +237,87 @@ module.exports = {
       const r = await Resource.findById(id).lean();
       bailIf(!r, "Recurso não encontrado", next);
       res.json(r);
+    } catch (err) {
+      next(err);
+    }
+  },
+  getAllResources: async (req, res, next) => {
+    try {
+      const {
+        tag,
+        dateFrom,
+        dateTo,
+        search,
+        username: usernameFromQuery,
+      } = req.query;
+
+      const user = req.user || null;
+      const effectiveUsername =
+        usernameFromQuery || (user && user.username) || null;
+
+      let filter;
+      if (effectiveUsername) {
+        filter = {
+          $or: [{ public: true }, { "metadata.publicador": effectiveUsername }],
+        };
+      } else {
+        filter = { public: true };
+      }
+
+      // 2) Filtro tag
+      if (tag) {
+        filter["metadata.tags"] = tag;
+      }
+
+      // 3) Filtro por data
+      if (dateFrom || dateTo) {
+        filter["metadata.dataCriacao"] = {};
+        if (dateFrom) filter["metadata.dataCriacao"].$gte = new Date(dateFrom);
+        if (dateTo) filter["metadata.dataCriacao"].$lte = new Date(dateTo);
+      }
+
+      // 4) Filtro por título/search
+      if (search) {
+        filter["metadata.titulo"] = { $regex: search, $options: "i" };
+      }
+
+      // 5) Fetch dos recursos no MongoDB
+      const resources = await Resource.find(filter)
+        .sort({ "metadata.dataCriacao": -1 })
+        .lean();
+
+      // 6) Atualiza taxonomia e converte em flatTags
+      taxonomy.updateHierarchyWithResources(resources);
+      const tagOptions = taxonomy.getFlatTags();
+
+      // 7) Responde sempre JSON para o front
+      res.json({ resources, tagOptions });
+    } catch (err) {
+      next(err);
+    }
+  },
+
+  // AUTH
+  getUser: async (req, res, next) => {
+    try {
+      const username = req.params.username;
+      const user = await User.findOne({ username }).lean();
+      if (!user) {
+        return res.status(404).json({ error: "Utilizador não encontrado" });
+      }
+      res.json(user);
+    } catch (err) {
+      next(err);
+    }
+  },
+  getUserByIdentifier: async (req, res, next) => {
+    try {
+      const param = req.params.id;
+      const user = await User.findById(param).lean();
+      if (!user) {
+        return res.status(404).json({ error: "Utilizador não encontrado" });
+      }
+      return res.json(user);
     } catch (err) {
       next(err);
     }

@@ -18,6 +18,14 @@ html
       .container
         p © 2025 Eu Digital Project
 
+    if user
+      script.
+        window.currentUserId = "#{user._id}";
+    else
+      script.
+        window.currentUserId = null;
+
+
     script.
       function showToast(msg, isError = false) {
         const el = document.createElement('div');

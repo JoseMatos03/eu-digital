@@ -1,7 +1,6 @@
-const bcrypt = require("bcryptjs");
+const axios = require("axios");
 const passport = require("passport");
 const logger = require("../utils/logger");
-const User = require("../models/User");
 
 exports.showLogin = (req, res) => {
   logger.info("Página de login solicitada");
@@ -48,8 +47,13 @@ exports.register = async (req, res, next) => {
   try {
     const { username, email, password } = req.body;
     logger.info(`A registar novo utilizador: ${username}`);
-    const passwordHash = await bcrypt.hash(password, 12);
-    const user = await User.create({ username, email, passwordHash });
+    const apiBase = `http://backoffice:3001`;
+    const response = await axios.post(`${apiBase}/api/users`, {
+      username,
+      email,
+      password,
+    });
+    const user = response.data;
     logger.info(`Utilizador criado: ${user._id} (${username})`);
 
     req.login(user, (err) => {
@@ -60,8 +64,15 @@ exports.register = async (req, res, next) => {
       res.redirect("/");
     });
   } catch (err) {
-    logger.error(`Erro no registo de utilizador: ${err.message}`);
-    next(err);
+    if (err.response) {
+      logger.error(`Erro no registo (API): ${err.response.data.error}`);
+      return res.status(err.response.status).render("register", {
+        title: "Registar",
+        error: err.response.data.error,
+      });
+    }
+    logger.error(`Erro inesperado no registo: ${err.message}`);
+    return next(err);
   }
 };
 

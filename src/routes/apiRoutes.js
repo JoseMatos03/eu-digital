@@ -50,20 +50,13 @@ router.get("/admin/stats", apiController.getStats);
 //
 // COMMENTS
 //
-router.get(
-  "/resources/:id/comments",
-  ensureAuthenticated,
-  commentController.listComments
-);
-router.post(
-  "/resources/:id/comments",
-  ensureAuthenticated,
-  commentController.createComment
-);
+router.get("/resources/:id/comments", commentController.listComments);
+router.post("/resources/:id/comments", commentController.createComment);
 
 //
 // RESOURCES
 //
+router.get("/resources", apiController.getAllResources);
 router.get("/resources/:id", apiController.getResource);
 router.post(
   "/resources",
@@ -72,6 +65,11 @@ router.post(
   apiController.createResource
 );
 router.post("/resources/:id/export", apiController.exportResource);
+
+// AUTH
+router.get("/users/:username", apiController.getUser);
+router.get("/users/id/:id", apiController.getUserByIdentifier);
+router.post("/users", apiController.createUser);
 
 router.use("/admin", ensureAdmin); // ensure user is admin in admin routes
 module.exports = router;

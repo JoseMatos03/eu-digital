@@ -102,10 +102,22 @@ function rebuildHierarchyFromResources(resources) {
   }
 }
 
+/**
+ * Adiciona (sem apagar nada) as tags de cada recurso.
+ * Recursos antigos permanecem; só entram novos ramos se ainda não existirem.
+ */
+function updateHierarchyWithResources(resources) {
+  if (!Array.isArray(resources)) return;
+  for (const r of resources) {
+    registerResourceTags(r);
+  }
+}
+
 module.exports = {
   hierarchy,
   addTagPath,
   registerResourceTags,
   rebuildHierarchyFromResources,
+  updateHierarchyWithResources,
   getFlatTags,
 };

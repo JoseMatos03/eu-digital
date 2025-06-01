@@ -11,43 +11,49 @@ block content
 
   hr
   form.form(method="get", action="/")
-  .filters-grid
-    .search-bar
-      input.form-control(type="text", name="search", placeholder="Procurar recurso...", value=filters.search)
+    .filters-grid
+      .search-bar
+        input.form-control(
+          type="text"
+          name="search"
+          placeholder="Procurar recurso..."
+          value=filters.search
+        )
 
-    .category-date
-      select.form-select(name="tag")
-        option(value="") Todas as categorias
-        each t in tagOptions
-          option(value=t selected=(filters.tag===t))= t
-      input.form-control(type="date", name="dateFrom", value=filters.dateFrom)
-      input.form-control(type="date", name="dateTo", value=filters.dateTo)
-    .filter-btn
-      button.btn(type="submit") Filtrar
+      .category-date
+        select.form-select(name="tag")
+          option(value="") Todas as categorias
+          each t in tagOptions
+            option(value=t selected=(filters.tag===t))= t
+        input.form-control(type="date" name="dateFrom" value=filters.dateFrom)
+        input.form-control(type="date" name="dateTo"   value=filters.dateTo)
 
-    if resources.length
-      ul.resource-list
-        each r in resources
-          li.resource-item.card
-            h3= r.metadata.titulo
-            p Tipo: #{r.metadata.tipo} | Categorias: #{r.metadata.tags.join(', ')}
-            p Data: #{new Date(r.metadata.dataCriacao).toLocaleDateString()}
-            if user && r.metadata.publicador === user.username
-              span.tag Proprietário
-            else
-              span.tag Público
-            a.button.btn(href="#", data-id=r._id) Ver
-            form(method="post", action=`http://localhost:3001/api/admin/resources/${r._id}/export`, style="display:inline")
-              button.btn(type="submit") 📦 Exportar
-    else
-      p Não há recursos para mostrar.
+      .filter-btn
+        button.btn(type="submit") Filtrar
 
-    if user
-      form.form.upload-form(method="post", action="http://localhost:3001/api/admin/resources", enctype="multipart/form-data", data-ajax)
-        .form-group
-          label(for="sip") Escolher ficheiro ZIP
-          input.form-control(type="file", id="sip", name="sip")
-        .form-group
-          button.btn(type="submit") Upload
+  if resources.length
+    ul.resource-list
+      each r in resources
+        li.resource-item.card
+          h3= r.metadata.titulo
+          p Tipo: #{r.metadata.tipo} | Categorias: #{r.metadata.tags.join(', ')}
+          p Data: #{new Date(r.metadata.dataCriacao).toLocaleDateString()}
+          if user && r.metadata.publicador === user.username
+            span.tag Proprietário
+          else
+            span.tag Público
+          a.button.btn(href="#", data-id=r._id) Ver
+          form(method="post", action=`http://localhost:3001/api/admin/resources/${r._id}/export`, style="display:inline")
+            button.btn(type="submit") 📦 Exportar
+  else
+    p Não há recursos para mostrar.
 
-    include partials/resourceModal.pug
+  if user
+    form.form.upload-form(method="post", action="http://localhost:3001/api/admin/resources", enctype="multipart/form-data", data-ajax)
+      .form-group
+        label(for="sip") Escolher ficheiro ZIP
+        input.form-control(type="file", id="sip", name="sip")
+      .form-group
+        button.btn(type="submit") Upload
+
+  include partials/resourceModal.pug
