@@ -38,14 +38,16 @@ Desenvolver uma aplicação Web que permita ao utilizador:
 
 ## Como correr o projeto
 
+Consulta o [DEVELOPERS.md](./DEVELOPERS.md) para instruções detalhadas de instalação, setup do `.env`, comandos úteis e alternativas sem Docker.
+Depois, basta executar:
+
 ```bash
 npm run docker
 ```
 
 > A app ficará acessível em: [http://localhost:3000](http://localhost:3000)
-> O backoffice ficará exposto em `http://localhost:3001`
 
-Consulta o [DEVELOPERS.md](./DEVELOPERS.md) para instruções detalhadas de instalação, setup do `.env`, comandos úteis e alternativas sem Docker.
+> O backoffice ficará exposto em `http://localhost:3001`
 
 ## Equipa
 

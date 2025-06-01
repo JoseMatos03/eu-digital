@@ -42,6 +42,8 @@ Projeto_Compilador/
 └── docker-compose.yml       # Orquestra os serviços (MongoDB, backoffice, frontoffice)
 ```
 
+> NOTA: Em alguns casos, pode ser necessário criar manualmente as diretorias `tmp_sips`, `uploads` e `logs`, pois em certos ambientes, estes podem não ser criados automaticamente e resultará em erros na execução.
+
 ## Instalar e correr o projeto com Docker
 
 ### 1. Clonar o repositório
