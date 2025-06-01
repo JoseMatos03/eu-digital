@@ -68,6 +68,12 @@ exports.handleIngest = async (req, res, next) => {
       next
     );
     const metadataObj = await fs.readJSON(metadataSrcPath);
+    if (metadataObj.dataCriacao) {
+      metadataObj.dataCriacao = new Date(metadataObj.dataCriacao);
+    }
+    if (metadataObj.dataSubmissao) {
+      metadataObj.dataSubmissao = new Date(metadataObj.dataSubmissao);
+    }
 
     // 7. Preparar diretorias por tipo de recurso
     const tipoCat = metadataObj.tipo;

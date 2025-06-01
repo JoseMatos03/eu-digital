@@ -275,9 +275,16 @@ module.exports = {
         filter = { public: true };
       }
 
-      // 2) Filtro tag
+      // 2) Filtro tag (match por prefixo)
       if (tag) {
-        filter["metadata.tags"] = tag;
+        // ^TAG($|/) significa:
+        //  - começa por “TAG” e de seguida ou acaba (fim da string)
+        //  - ou segue com “/” (para categorias mais específicas)
+        const esc = tag.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        // (só para escapar eventuais caracteres especiais; normalmente as tags não têm,
+        // mas fica a técnica para casos futuros)
+
+        filter["metadata.tags"] = { $regex: `^${esc}($|/)` };
       }
 
       // 3) Filtro por data
