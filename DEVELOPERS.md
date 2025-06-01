@@ -51,7 +51,7 @@ PORT=3000
 ### 3. Lançar a aplicação
 
 ```bash
-docker compose up --build
+npm run docker
 ```
 
 Este comando:
@@ -60,12 +60,6 @@ Este comando:
 - Liga-os em rede;
 - Monta os volumes de dados, uploads e logs;
 - Inicia a app na porta `http://localhost:3000`
-
-### 4. Parar os containers
-
-```bash
-docker-compose down
-```
 
 ## Comandos úteis Docker
 
@@ -82,15 +76,5 @@ docker exec -it ew-backoffice-1 bash
 ```
 
 > Usa `docker ps` para ver o nome exato do container em execução, caso o nome seja diferente.
-
-## Desenvolvimento sem Docker (alternativo)
-
-Se precisares de correr a app localmente sem Docker:
-
-```bash
-cd src
-npm install
-npm run dev
-```
 
 Garante que tens o MongoDB a correr localmente na porta 27017 e ajusta o `MONGO_URI` no `.env` se necessário.

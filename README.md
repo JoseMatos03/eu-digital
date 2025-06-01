@@ -21,6 +21,8 @@ Desenvolver uma aplicação Web que permita ao utilizador:
 - **Pug** – Motor de templates para HTML
 - **Docker** + **Docker Compose** – Containerização e orquestração
 - **Multer** – Upload de ficheiros
+- **Unzipper/Archiver** - Gestão de ficheiros ZIP
+- **Winston** - Logger
 - **dotenv** – Configuração por ambiente
 - **HTML/CSS/JS** – Frontend e interface
 
@@ -37,10 +39,11 @@ Desenvolver uma aplicação Web que permita ao utilizador:
 ## Como correr o projeto
 
 ```bash
-docker-compose up --build
+npm run docker
 ```
 
 > A app ficará acessível em: [http://localhost:3000](http://localhost:3000)
+> O backoffice ficará exposto em `http://localhost:3001`
 
 Consulta o [DEVELOPERS.md](./DEVELOPERS.md) para instruções detalhadas de instalação, setup do `.env`, comandos úteis e alternativas sem Docker.
 
