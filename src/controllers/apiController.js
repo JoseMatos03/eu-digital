@@ -159,7 +159,18 @@ module.exports = {
       next(err);
     }
   },
-
+  getNewsById: async (req, res, next) => {
+    try {
+      const param = req.params.id;
+      const news = await News.findById(param).lean();
+      if (!news) {
+        return res.status(404).json({ error: "Notícia não encontrada" });
+      }
+      return res.json(news);
+    } catch (err) {
+      next(err);
+    }
+  },
   createNews: async (req, res, next) => {
     try {
       const data = req.body;

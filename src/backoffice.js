@@ -2,7 +2,10 @@ require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const bcrypt = require("bcryptjs");
+
 const apiRoutes = require("./routes/apiRoutes");
+const User = require("./models/User");
 
 const app = express();
 
@@ -14,13 +17,81 @@ app.use(
   })
 );
 
+async function seedAdmin() {
+  const username = process.env.ADMIN_USER;
+  const email = process.env.ADMIN_EMAIL;
+  const password = process.env.ADMIN_PASS;
+
+  if (!username || !email || !password) {
+    console.warn(
+      "ADMIN_USER / ADMIN_EMAIL / ADMIN_PASS não definidos — skipped seed admin"
+    );
+    return;
+  }
+
+  try {
+    const existing = await User.findOne({ role: "admin" }).lean();
+    if (existing) {
+      console.log(`Admin já existe: ${existing.username}`);
+      return;
+    }
+
+    const passwordHash = await bcrypt.hash(password, 12);
+    const admin = await User.create({
+      username,
+      email,
+      passwordHash,
+      role: "admin",
+    });
+    console.log(`Seeded admin user: ${admin.username}`);
+  } catch (err) {
+    console.error("Erro ao criar admin seed:", err);
+  }
+}
+
+async function seedTestUser() {
+  const username = process.env.TEST_USER;
+  const email = process.env.TEST_EMAIL;
+  const password = process.env.TEST_PASS;
+
+  if (!username || !email || !password) {
+    console.warn(
+      "TEST_USER / TEST_EMAIL / TEST_PASS não definidos — skipped seed test user"
+    );
+    return;
+  }
+
+  try {
+    const existing = await User.findOne({ username }).lean();
+    if (existing) {
+      console.log(`Test user já existe: ${existing.username}`);
+      return;
+    }
+
+    const passwordHash = await bcrypt.hash(password, 12);
+    const testUser = await User.create({
+      username,
+      email,
+      passwordHash,
+      role: "user",
+    });
+    console.log(`Seeded test user: ${testUser.username}`);
+  } catch (err) {
+    console.error("Erro ao criar test user seed:", err);
+  }
+}
+
 // Connect to MongoDB
 mongoose
   .connect(process.env.MONGO_URI || "mongodb://mongo:27017/eu-digital", {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
-  .then(() => console.log("API → Connected to MongoDB"))
+  .then(async () => {
+    await seedAdmin();
+    await seedTestUser();
+    console.log("API → Connected to MongoDB");
+  })
   .catch((err) => {
     console.error("API → MongoDB connection error:", err);
     process.exit(1);

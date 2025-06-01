@@ -21,6 +21,7 @@ router.post("/disseminate", oaisController.handleDisseminate);
 //
 // User administrative API calls
 router.get("/admin/users", apiController.listUsers);
+router.get("/admin/users/:id", apiController.getUserByIdentifier);
 router.post("/admin/users", apiController.createUser);
 router.put("/admin/users/:id", apiController.updateUser);
 router.delete("/admin/users/:id", apiController.deleteUser);
@@ -39,6 +40,7 @@ router.post("/admin/resources/:id/export", apiController.exportResource);
 
 // News administrative API calls
 router.get("/admin/news", apiController.listNews);
+router.get("/admin/news/:id", apiController.getNewsById);
 router.post("/admin/news", apiController.createNews);
 router.put("/admin/news/:id", apiController.updateNews);
 router.delete("/admin/news/:id", apiController.deleteNews);

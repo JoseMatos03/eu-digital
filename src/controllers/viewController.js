@@ -44,7 +44,7 @@ exports.renderAdmin = (req, res) => {
 
 exports.usersList = async (req, res, next) => {
   try {
-    const API_BASE = "http://localhost:3001";
+    const API_BASE = "http://backoffice:3001";
     const response = await axios.get(`${API_BASE}/api/admin/users`, {
       headers: { Cookie: req.headers.cookie || "" },
       withCredentials: true,
@@ -63,7 +63,7 @@ exports.usersCreateForm = (req, res) => {
 exports.usersEditForm = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const API_BASE = "http://localhost:3001";
+    const API_BASE = "http://backoffice:3001";
     const response = await axios.get(`${API_BASE}/api/admin/users/${id}`, {
       headers: { Cookie: req.headers.cookie || "" },
       withCredentials: true,
@@ -82,7 +82,7 @@ exports.usersEditForm = async (req, res, next) => {
 
 exports.newsList = async (req, res, next) => {
   try {
-    const API_BASE = "http://localhost:3001";
+    const API_BASE = "http://backoffice:3001";
     const response = await axios.get(`${API_BASE}/api/admin/news`, {
       headers: { Cookie: req.headers.cookie || "" },
       withCredentials: true,
@@ -101,7 +101,7 @@ exports.newsCreateForm = (req, res) => {
 exports.newsEditForm = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const API_BASE = "http://localhost:3001";
+    const API_BASE = "http://backoffice:3001";
     const response = await axios.get(`${API_BASE}/api/admin/news/${id}`, {
       headers: { Cookie: req.headers.cookie || "" },
       withCredentials: true,
@@ -119,7 +119,7 @@ exports.newsEditForm = async (req, res, next) => {
 
 exports.resourcesList = async (req, res, next) => {
   try {
-    const API_BASE = "http://localhost:3001";
+    const API_BASE = "http://backoffice:3001";
     const response = await axios.get(`${API_BASE}/api/admin/resources`, {
       headers: { Cookie: req.headers.cookie || "" },
       withCredentials: true,
