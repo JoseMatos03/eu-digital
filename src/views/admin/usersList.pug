@@ -2,7 +2,6 @@ extends ../layouts/layout
 
 block content
   .container
-  .container
   h2= title
   a.nav-link(href="/admin/users/create") ➕ Criar novo utilizador
   table
@@ -23,3 +22,4 @@ block content
             form.form.form(data-ajax method="post", action=`http://localhost:3001/api/admin/users/${u._id}`, style="display:inline")
               input.form-control(type="hidden", name="_method", value="DELETE")
               button.btn(type="submit") 🗑️
+  p: a.nav-link(href="/admin") Voltar

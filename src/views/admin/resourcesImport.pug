@@ -2,7 +2,6 @@ extends ../layouts/layout
 
 block content
   .container
-  .container
   h2 Importar SIP
   form.form.upload-form(method="post", action="http://localhost:3001/api/admin/resources", enctype="multipart/form-data", data-ajax, data-redirect="/admin/resources")
     .form-group
@@ -10,3 +9,4 @@ block content
       input.form-control(type="file", id="sip", name="sip")
     .form-group
       button.btn(type="submit") Upload
+  p: a.nav-link(href="/admin") Voltar

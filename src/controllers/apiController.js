@@ -159,6 +159,16 @@ module.exports = {
       next(err);
     }
   },
+  getVisibleNews: async (req, res, next) => {
+    try {
+      const news = await News.find({ visible: true })
+        .sort({ createdAt: -1 })
+        .lean();
+      res.json({ news });
+    } catch (err) {
+      next(err);
+    }
+  },
   getNewsById: async (req, res, next) => {
     try {
       const param = req.params.id;
