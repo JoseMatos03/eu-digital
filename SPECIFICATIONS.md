@@ -18,7 +18,7 @@ A aplicação deverá aceitar os seguintes tipos de ficheiros, divididos por cat
 - `.md` (Markdown)
 - `.pdf`
 
-### Ficheiro de Dados
+### Dados
 
 - `.csv`
 - `.json`

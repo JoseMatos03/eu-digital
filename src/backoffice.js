@@ -49,38 +49,6 @@ async function seedAdmin() {
   }
 }
 
-async function seedTestUser() {
-  const username = process.env.TEST_USER;
-  const email = process.env.TEST_EMAIL;
-  const password = process.env.TEST_PASS;
-
-  if (!username || !email || !password) {
-    console.warn(
-      "TEST_USER / TEST_EMAIL / TEST_PASS não definidos — skipped seed test user"
-    );
-    return;
-  }
-
-  try {
-    const existing = await User.findOne({ username }).lean();
-    if (existing) {
-      console.log(`Test user já existe: ${existing.username}`);
-      return;
-    }
-
-    const passwordHash = await bcrypt.hash(password, 12);
-    const testUser = await User.create({
-      username,
-      email,
-      passwordHash,
-      role: "user",
-    });
-    console.log(`Seeded test user: ${testUser.username}`);
-  } catch (err) {
-    console.error("Erro ao criar test user seed:", err);
-  }
-}
-
 // Connect to MongoDB
 mongoose
   .connect(process.env.MONGO_URI || "mongodb://mongo:27017/eu-digital", {
@@ -89,7 +57,6 @@ mongoose
   })
   .then(async () => {
     await seedAdmin();
-    await seedTestUser();
     console.log("API → Connected to MongoDB");
   })
   .catch((err) => {
